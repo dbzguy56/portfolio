@@ -1,6 +1,40 @@
-// Place all the styles related to the Mastermind controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
-h1 {
-  color: #00ffff
+#board {
+  width: 450px;
+  height: 800px;
+  margin: auto;
+  margin-bottom: 100px;
+}
+
+#colors {
+  text-align: left;
+}
+
+.piece {
+  background-color: #BF8040;
+  font-size: -webkit-xxx-large;
+  text-align: center;
+}
+
+.red {
+  color: #FF0000;
+}
+
+.green {
+  color: #00FF00;
+}
+
+.blue {
+  color: #0000FF;
+}
+
+.yellow {
+  color: #FFFF00;
+}
+
+.magenta {
+  color: #FF00FF;
+}
+
+.cyan {
+  color: #00FFFF;
 }
