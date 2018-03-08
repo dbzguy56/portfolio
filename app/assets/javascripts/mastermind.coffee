@@ -6,11 +6,12 @@ $(document).ready ->
 
 $(document).ready ->
   boardStyle = document.querySelector('#board')
-  pieces = document.querySelectorAll('.piece')
+  allPieces = document.querySelectorAll('.piece')
+  boardPieces = document.querySelectorAll('#board .piece')
   colorPieces = document.querySelectorAll('#colors .piece')
   colorsDiv = document.querySelector('#colors')
 
-  pieces.forEach (piece) ->
+  allPieces.forEach (piece) ->
     piece.style.height = String(boardStyle.offsetHeight/12).concat('px')
     #x.style.width = String(boardStyle.offsetWidth/4).concat('px')
     return
