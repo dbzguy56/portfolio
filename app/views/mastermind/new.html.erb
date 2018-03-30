@@ -7,10 +7,13 @@
       <%= render 'color_row' %>
     <% end %>
   </div>
+  <div class="col-xs-2"></div>
+  <div class="col-xs-12"> <button>Check row </button> </div>
 </div>
-<div id="board" class="col-xs-4">
-  <% 12.times do %>
-    <%= render 'row' %>
+<div id="board" class="col-xs-4" ondragover="allowDrop(event)">
+  <% 12.times do |r| %>
+    <span class="col-xs-1"><%=r+1%></span>
+    <%= render 'row', r: r%>
   <% end %>
 </div>
 <div class="col-xs-4">
