@@ -1,4 +1,4 @@
-<div class="center jumbotron">
+<div class="center jumbotron" onclick="checkGuess">
   <h1>Mastermind <%="\u263b"%></h1>
 </div>
 <div id="leftPanel" class="col-xs-4">
@@ -8,7 +8,10 @@
     <% end %>
   </div>
   <div class="col-xs-2"></div>
-  <div class="col-xs-12"> <button>Check row </button> </div>
+  <div class="col-xs-12">
+     <button id="checkButton" onclick="checkGuess()">Check row </button>
+     <div id="turnNumber"></div>
+  </div>
 </div>
 <div id="board" class="col-xs-4" ondragover="allowDrop(event)">
   <% 12.times do |r| %>

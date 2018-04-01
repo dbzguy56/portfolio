@@ -1,10 +1,12 @@
+turn = -1
+piecesList = undefined
+
 @allowDrop = (ev) ->
   ev.preventDefault()
   return
 
 @drag = (ev) ->
   ev.dataTransfer.setData("text", ev.target.className)
-  #e.dataTransfer.items.add(e.target.id, "text/html")
   return
 
 @drop = (ev) ->
@@ -13,12 +15,30 @@
   ev.target.className = ev.target.className.replace("col-xs-6", "col-xs-3")
   return
 
+@checkGuess = ->
+  if turn != -1 || turn == 11
+    row = turn * 4
+    piecesList[row].setAttribute("ondrop", "")
+    piecesList[row + 1].setAttribute("ondrop", "")
+    piecesList[row + 2].setAttribute("ondrop", "")
+    piecesList[row + 3].setAttribute("ondrop", "")
+  if turn != 11
+    turn += 1
+    row = turn * 4
+    piecesList[row].setAttribute("ondrop", "drop(event)")
+    piecesList[row + 1].setAttribute("ondrop", "drop(event)")
+    piecesList[row + 2].setAttribute("ondrop", "drop(event)")
+    piecesList[row + 3].setAttribute("ondrop", "drop(event)")
+    document.getElementById("turnNumber").innerHTML = 'Turn: ' + (turn + 1)
+  else
+    document.getElementById('checkButton').style.visibility = 'hidden'
+    document.getElementById("turnNumber").innerHTML = 'You lose!'
+  return
+
+
 $(document).ready ->
   piecesList = document.querySelectorAll('#board .piece')
-  piecesList[0].setAttribute("ondrop", "drop(event)")
-  piecesList[1].setAttribute("ondrop", "drop(event)")
-  piecesList[2].setAttribute("ondrop", "drop(event)")
-  piecesList[3].setAttribute("ondrop", "drop(event)")
+  checkGuess()
   boardStyle = document.querySelector('#board')
   allPieces = document.querySelectorAll('.piece')
   boardPieces = document.querySelectorAll('#board .piece')
@@ -28,7 +48,6 @@ $(document).ready ->
 
   allPieces.forEach (piece) ->
     piece.style.height = String(boardStyle.offsetHeight/12).concat('px')
-    #x.style.width = String(boardStyle.offsetWidth/4).concat('px')
     return
 
   colorsDiv.style.width = String(boardStyle.offsetWidth/3).concat('px')
