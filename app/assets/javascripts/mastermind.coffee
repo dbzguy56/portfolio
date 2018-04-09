@@ -17,7 +17,9 @@ secretColorCode = []
   return
 
 @checkGuess = ->
+  piecesList = document.querySelectorAll('#board .piece')
   row = turn * 4
+  console.log(piecesList[row])
   correctPositionGuesses = 0
   correctGuesses = 0
   secondCol = row + 1
@@ -26,21 +28,20 @@ secretColorCode = []
   if piecesList[row].classList.item(3) != null && piecesList[secondCol].classList.item(3) != null &&
   piecesList[thirdCol].classList.item(3) != null && piecesList[fourthCol].classList.item(3) != null
     i = 0
-    secretColorsLeft = secretColorCode
     piecesColorsLeft = [piecesList[row].classList.item(3),piecesList[secondCol].classList.item(3),piecesList[thirdCol].classList.item(3),piecesList[fourthCol].classList.item(3)]
     while i < 4
       j = 0
       while j < 4
-        console.log("Piece: " + piecesColorsLeft[row + j] + ", SecretColor: " + secretColorCode[i] + "\n" + "i: " + i + " ,j: " + j)
-        if piecesColorsLeft[row + j] == secretColorCode[i]
+        console.log("Piece: " + piecesColorsLeft[j] + ", SecretColor: " + secretColorCode[i] + "\n" + "i: " + i + " ,j: " + j + " , row: " + row)
+        if piecesColorsLeft[j] == secretColorCode[i]
           #if one of the pieces match the secretColorCode
-          if piecesColorsLeft[row + i] == secretColorCode[i]
+          if piecesColorsLeft[i] == secretColorCode[i]
             #if the piece position is at the same position as the secretColorCode position
             correctPositionGuesses++
             console.log("correct pos: " + correctPositionGuesses)
           else
             correctGuesses++
-            piecesColorsLeft[row + j] = ""
+            piecesColorsLeft[j] = ""
             console.log("wrong pos: " + correctGuesses)
             j = 0
           i++
@@ -48,21 +49,25 @@ secretColorCode = []
         j++
       i++
 
-    console.log(correctPositionGuesses + ", " + correctGuesses)
+    #console.log(correctPositionGuesses + ", " + correctGuesses)
+    winner = false
+    if correctPositionGuesses == 4
+      winner = true
 
     guessIndicatorSymbols = document.querySelectorAll('.guess-indicator')
     count = 0
     while count < 4
+      pos = row + count
       if correctPositionGuesses > 0
-        guessIndicatorSymbols[count].innerHTML = "\u263b"
-        guessIndicatorSymbols[count].classList.add("green")
+        guessIndicatorSymbols[pos].innerHTML = "\u263b"
+        guessIndicatorSymbols[pos].classList.add("green")
         correctPositionGuesses--
       else if correctGuesses > 0
-        guessIndicatorSymbols[count].innerHTML = "\u263b"
-        guessIndicatorSymbols[count].classList.add("red")
+        guessIndicatorSymbols[pos].innerHTML = "\u263b"
+        guessIndicatorSymbols[pos].classList.add("red")
         correctGuesses--
       else
-        guessIndicatorSymbols[count].innerHTML = "\u2639"
+        guessIndicatorSymbols[pos].innerHTML = "\u2639"
       count++
 
 
@@ -78,7 +83,11 @@ secretColorCode = []
       piecesList[row + 1].setAttribute("ondrop", "drop(event)")
       piecesList[row + 2].setAttribute("ondrop", "drop(event)")
       piecesList[row + 3].setAttribute("ondrop", "drop(event)")
-      document.getElementById("turnNumber").innerHTML = 'Turn: ' + (turn + 1)
+      if winner
+        document.getElementById('checkButton').style.visibility = 'hidden'
+        document.getElementById("turnNumber").innerHTML = 'You win!'
+      else
+        document.getElementById("turnNumber").innerHTML = 'Turn: ' + (turn + 1)
     else
       document.getElementById('checkButton').style.visibility = 'hidden'
       document.getElementById("turnNumber").innerHTML = 'You lose!'
