@@ -9,10 +9,17 @@
   text-align: left;
 }
 
+.big-font {
+  font-size: -webkit-xxx-large;
+}
+
 .piece {
   background-color: #BF8040;
-  font-size: -webkit-xxx-large;
   text-align: center;
+}
+
+.guess-indicator {
+  display: inline-block;
 }
 
 .red {

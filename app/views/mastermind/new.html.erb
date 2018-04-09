@@ -1,5 +1,5 @@
-<div class="center jumbotron" onclick="checkGuess">
-  <h1>Mastermind <%="\u263b"%></h1>
+<div class="center jumbotron">
+  <h1>Mastermind</h1>
 </div>
 <div id="leftPanel" class="col-xs-4">
   <div id="colors" class="col-xs-10 align-self-center">
@@ -10,7 +10,7 @@
   <div class="col-xs-2"></div>
   <div class="col-xs-12">
      <button id="checkButton" onclick="checkGuess()">Check row </button>
-     <div id="turnNumber"></div>
+     <div id="turnNumber">Turn: 1</div>
   </div>
 </div>
 <div id="board" class="col-xs-4" ondragover="allowDrop(event)">
@@ -20,4 +20,9 @@
   <% end %>
 </div>
 <div class="col-xs-4">
+    <% 4.times do %>
+      <div class="big-font guess-indicator">
+        <%="\u263b"%>
+      </div>
+    <% end %>
 </div>
