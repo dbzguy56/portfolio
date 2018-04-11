@@ -1,6 +1,57 @@
+colors = ["red", "green", "blue", "yellow", "magenta", "cyan"]
 turn = 0
 piecesList = undefined
 secretColorCode = []
+
+@newGame = ->
+  guessIndicatorSymbols = document.querySelectorAll('.guess-indicator')
+
+  i = 0
+  secretColorCode = []
+  while i < 4 #new secret color code
+    secretColorCode.push colors[Math.floor(Math.random() * 6)]
+    i++
+  console.log(secretColorCode)
+
+  while turn >= 0
+    row = turn * 4
+    secondCol = row + 1
+    thirdCol = row + 2
+    fourthCol = row + 3
+    count = 0
+
+    while count < 6 #check for each color in each piece in the row
+      if piecesList[row].classList.contains(colors[count])
+        piecesList[row].classList.remove(colors[count])
+      if piecesList[secondCol].classList.contains(colors[count])
+        piecesList[secondCol].classList.remove(colors[count])
+      if piecesList[thirdCol].classList.contains(colors[count])
+        piecesList[thirdCol].classList.remove(colors[count])
+      if piecesList[fourthCol].classList.contains(colors[count])
+        piecesList[fourthCol].classList.remove(colors[count])
+
+      if count < 4
+        guessIndicatorSymbols[row + count].innerHTML = ""
+        guessIndicatorSymbols[row + count].classList.remove(colors[0])
+        guessIndicatorSymbols[row + count].classList.remove(colors[1])
+
+      count++
+
+    piecesList[row].setAttribute("ondrop", "")
+    piecesList[secondCol].setAttribute("ondrop", "")
+    piecesList[thirdCol].setAttribute("ondrop", "")
+    piecesList[fourthCol].setAttribute("ondrop", "")
+
+    turn--
+
+  piecesList[0].setAttribute("ondrop", "drop(event)")
+  piecesList[1].setAttribute("ondrop", "drop(event)")
+  piecesList[2].setAttribute("ondrop", "drop(event)")
+  piecesList[3].setAttribute("ondrop", "drop(event)")
+
+  turn = 0
+  document.getElementById("turnNumber").innerHTML = 'Turn: 1'
+  document.getElementById('checkButton').style.visibility = 'visible'
 
 @allowDrop = (ev) ->
   ev.preventDefault()
@@ -32,17 +83,17 @@ secretColorCode = []
     while i < 4
       j = 0
       while j < 4
-        console.log("Piece: " + piecesColorsLeft[j] + ", SecretColor: " + secretColorCode[i] + "\n" + "i: " + i + " ,j: " + j + " , row: " + row)
+        #console.log("Piece: " + piecesColorsLeft[j] + ", SecretColor: " + secretColorCode[i] + "\n" + "i: " + i + " ,j: " + j + " , row: " + row)
         if piecesColorsLeft[j] == secretColorCode[i]
           #if one of the pieces match the secretColorCode
           if piecesColorsLeft[i] == secretColorCode[i]
             #if the piece position is at the same position as the secretColorCode position
             correctPositionGuesses++
-            console.log("correct pos: " + correctPositionGuesses)
+            #console.log("correct pos: " + correctPositionGuesses)
           else
             correctGuesses++
             piecesColorsLeft[j] = ""
-            console.log("wrong pos: " + correctGuesses)
+            #console.log("wrong pos: " + correctGuesses)
             j = 0
           i++
           continue
@@ -70,12 +121,10 @@ secretColorCode = []
         guessIndicatorSymbols[pos].innerHTML = "\u2639"
       count++
 
-
-    if turn != -1 || turn == 11
-      piecesList[row].setAttribute("ondrop", "")
-      piecesList[secondCol].setAttribute("ondrop", "")
-      piecesList[thirdCol].setAttribute("ondrop", "")
-      piecesList[fourthCol].setAttribute("ondrop", "")
+    piecesList[row].setAttribute("ondrop", "")
+    piecesList[secondCol].setAttribute("ondrop", "")
+    piecesList[thirdCol].setAttribute("ondrop", "")
+    piecesList[fourthCol].setAttribute("ondrop", "")
     if turn != 11
       turn += 1
       row = turn * 4
@@ -95,7 +144,6 @@ secretColorCode = []
 
 
 $(document).ready ->
-  colors = ["red", "green", "blue", "yellow", "magenta", "cyan"]
   i = 0
   while i < 4
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
@@ -109,7 +157,6 @@ $(document).ready ->
   piecesList[3].setAttribute("ondrop", "drop(event)")
   boardStyle = document.querySelector('#board')
   allPieces = document.querySelectorAll('.piece')
-  boardPieces = document.querySelectorAll('#board .piece')
   colorPieces = document.querySelectorAll('#colors .piece')
   colorsDiv = document.querySelector('#colors')
 
