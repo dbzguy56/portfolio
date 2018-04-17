@@ -1,7 +1,9 @@
+<%= javascript_include_tag params[:controller] %>
+
 <div class="center jumbotron">
   <h1>Mastermind</h1>
 </div>
-<div id="leftPanel" class="col-xs-4">
+<div id="leftPanel" class="col-xs-2">
   <div id="colors" class="col-xs-10 align-self-center">
     <% 3.times do %>
       <%= render 'color_row' %>
@@ -14,9 +16,9 @@
      <button onclick="newGame()">Start a new game </button>
   </div>
 </div>
-<div id="board" class="col-xs-4" ondragover="allowDrop(event)">
+<div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)">
   <% 12.times do |r| %>
-    <span class="col-xs-1"><%=r+1%></span>
+    <span id="turnSpan" class="col-xs-1"><%=r+1%></span>
     <%= render 'row', r: r%>
   <% end %>
 </div>

@@ -5,7 +5,6 @@ secretColorCode = []
 
 @newGame = ->
   guessIndicatorSymbols = document.querySelectorAll('.guess-indicator')
-
   i = 0
   secretColorCode = []
   while i < 4 #new secret color code

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
-  root 'mastermind#new'
-  get 'mastermind/new'
+  root 'static_pages#home'
+  get 'static_pages/home'
+  get '/mastermind', to: 'mastermind#new'
 end
