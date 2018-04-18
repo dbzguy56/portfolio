@@ -9,4 +9,5 @@ typeWriter = ->
     setTimeout(typeWriter, typingSpeed)
 
 $(document).ready ->
+  document.getElementById('intro-text').innerHTML = ""
   typeWriter()

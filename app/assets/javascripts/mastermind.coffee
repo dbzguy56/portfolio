@@ -91,9 +91,10 @@ secretColorCode = []
             #console.log("correct pos: " + correctPositionGuesses)
           else
             correctGuesses++
-            piecesColorsLeft[j] = ""
             #console.log("wrong pos: " + correctGuesses)
-            j = 0
+          piecesColorsLeft[j] = ""
+          #console.log("Colors Left:" + piecesColorsLeft)
+          j = 0
           i++
           continue
         j++
@@ -147,7 +148,7 @@ $(document).ready ->
   while i < 4
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
-  #secretColorCode = ["blue", "blue", "blue", "blue"]
+  #secretColorCode = ["red", "green", "blue", "blue"]
   console.log(secretColorCode)
   piecesList = document.querySelectorAll('#board .piece')
   piecesList[0].setAttribute("ondrop", "drop(event)")
