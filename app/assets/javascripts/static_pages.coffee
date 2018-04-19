@@ -1,4 +1,4 @@
-textToBeTyped = "Hello, my name is Deepak and I am a self-taught developer:)"
+textToBeTyped = "Hello, my name is Deepak and I am a self-taught developer :)"
 i = 0
 typingSpeed = 60
 
@@ -9,5 +9,4 @@ typeWriter = ->
     setTimeout(typeWriter, typingSpeed)
 
 $(document).ready ->
-  document.getElementById('intro-text').innerHTML = ""
   typeWriter()
