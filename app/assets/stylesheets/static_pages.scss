@@ -2,6 +2,34 @@
   text-align: center;
 }
 
+.container-fluid {
+  padding: 0;
+  height: 500px;
+  overflow: hidden;
+}
+
+.jumbotron {
+  background-color: transparent;
+}
+
 body {
-  padding-top: 60px;
+  margin-top: 60px;
+}
+
+#intro-text {
+  color: #FFF;
+  position: absolute;
+  left: 0;
+  top: 25%;
+  min-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+#typing-video {
+  filter: blur(5px);
+  max-width: 100%;
+  min-width: 1000px;
+  transform: translateY(-20%) rotate(0deg);
+  z-index: -1;
 }

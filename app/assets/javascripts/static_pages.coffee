@@ -1,6 +1,6 @@
 textToBeTyped = "Hello, my name is Deepak and I am a self-taught developer :)"
 i = 0
-typingSpeed = 60
+typingSpeed = 80
 
 typeWriter = ->
   if (i < textToBeTyped.length)
