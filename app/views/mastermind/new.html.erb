@@ -1,33 +1,35 @@
 <%= javascript_include_tag params[:controller] %>
-
-<div class="center jumbotron">
-  <h1>Mastermind</h1>
-</div>
-<div id="leftPanel" class="col-xs-2">
-  <div id="colors" class="col-xs-10 align-self-center">
-    <% 3.times do %>
-      <%= render 'color_row' %>
+<div class="col-xs-2"></div>
+<div class="col-xs-8">
+  <div class="center jumbotron white-text">
+    <h1>Mastermind</h1>
+  </div>
+  <div id="leftPanel" class="col-xs-3">
+    <div id="colors" class="col-xs-9 align-self-center">
+      <% 3.times do %>
+        <%= render 'color_row' %>
+      <% end %>
+    </div>
+    <div class="col-xs-2"></div>
+    <div id="turn-buttons" class="col-xs-12">
+      <div id="turn-number" class="white-text">Turn: 1</div> </br>
+       <button id="checkButton" onclick="checkGuess()">Check row </button> </br>
+       <button onclick="newGame()">Start a new game </button> </br>
+    </div>
+  </div>
+  <div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)">
+    <% 12.times do |r| %>
+      <span id="turn-span" class="col-xs-1 white-text"><%=r+1%></span>
+      <%= render 'row', r: r%>
     <% end %>
   </div>
-  <div class="col-xs-2"></div>
-  <div class="col-xs-12">
-     <button id="checkButton" onclick="checkGuess()">Check row </button>
-     <div id="turnNumber">Turn: 1</div>
-     <button onclick="newGame()">Start a new game </button>
-  </div>
-</div>
-<div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)">
-  <% 12.times do |r| %>
-    <span id="turnSpan" class="col-xs-1"><%=r+1%></span>
-    <%= render 'row', r: r%>
-  <% end %>
-</div>
-<div class="col-xs-4">
-  <% 12.times do %>
-    <% 4.times do %>
-      <div class="big-font guess-indicator">
-      </div>
+  <div class="col-xs-3">
+    <% 12.times do %>
+      <% 4.times do %>
+        <div class="guess-font guess-indicator">
+        </div>
+      <% end %>
+      <br>
     <% end %>
-    <br>
-  <% end %>
+  </div>
 </div>

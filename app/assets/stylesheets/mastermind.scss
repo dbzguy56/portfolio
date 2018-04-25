@@ -9,8 +9,27 @@
   text-align: left;
 }
 
+#turn-buttons {
+  padding-top: 25px;
+  padding-left: 0;
+}
+
+#turn-span {
+  margin-top: 30px;
+  border-radius: 20px 0 0 20px;
+}
+
+#turn-number {
+  font-size: 40px;
+}
+
 .big-font {
-  font-size: 50px;
+  font-size: 60px;
+}
+
+.guess-font {
+  font-size: 40px;
+  line-height: 1.673;
 }
 
 .piece {
@@ -46,6 +65,23 @@
   color: #00FFFF;
 }
 
+.white-text {
+  color: white;
+}
+
 button {
   align-self: center;
+  background-color: white;
+  border-radius: 8px;
+  border: none;
+  font-size: 20px;
+  margin: 10px 0px;
+  width: 150px;
+  &:hover {
+    background-color: #9d9d9d;
+  }
+}
+
+body {
+  min-width: 1415px;
 }
