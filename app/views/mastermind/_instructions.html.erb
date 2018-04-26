@@ -1,0 +1,24 @@
+<p>The computer picks a secret code which the player does not know. For example, the secret code is:
+<span class="blue big-font example">&#9899&#xFE0E</span><span class="red big-font example">&#9899&#xFE0E</span><span class="blue big-font example">&#9899&#xFE0E</span><span class="green big-font example">&#9899&#xFE0E</span></p>
+
+<p>The player has to guess the secret code. The player can do that by dragging one of the colors from the left into
+the first row of the gameboard. Lets say he chooses:
+<span class="yellow big-font example">&#9899&#xFE0E</span><span class="blue big-font example">&#9899&#xFE0E</span><span class="blue big-font example">&#9899&#xFE0E</span><span class="green big-font example">&#9899&#xFE0E</span></p>
+<p>The player then clicks the <button>Check row </button> button, to see if their guess is correct. The player gets
+the following smileys which indicate how many colours are correct and if they are in the correct position:</p>
+<span class="green big-font"><%="\u263b"%></span><span class="green big-font"><%="\u263b"%></span><span class="red big-font"><%="\u263b"%></span><span class="big-font"><%="\u2639"%></span></p>
+<p>> A <span class="green">green smiley face</span> means that the player has a colour that is in the secret code and that color is also in the right position.
+In this case blue and green are both colors that are in the secret code and they are in the right position.</p>
+<p>> A <span class="red">red smiley face</span> means that the player has a colour that is in the secret code, but it is in the wrong position.
+In this case the first blue that the player has chosen is in wrong position (Player chose to put it in the second position rather than the first). </p>
+<p>> A frown means that the player has chosen a colour that is not in the secret code. In this case yellow.</p>
+
+<p>The order of the smileys do not indicate that the player's colours are in the correct position. The green smileys always come first, followed
+by the red smileys and finally the frowns (If there are incorrect guesses).</p>
+<p>The player has 12 tries before they lose.</p>
+
+<p>The player can start a new game at anytime by clicking the <button>Start a new game </button> button below.</p>
+
+<p>Now go see if you are a mastermind and can guess the secret code!</p>
+
+<p>NOTE: This game was tested on the newest version of Chrome and may not be compatible with other browsers as of now.</p>

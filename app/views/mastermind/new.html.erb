@@ -4,6 +4,11 @@
   <div class="center jumbotron white-text">
     <h1>Mastermind</h1>
   </div>
+  <p id="how-to-play-text" class="white-text" data-toggle="collapse" data-target="#instructions-text" onclick="handleInstructClick()">How to play [+]</p>
+  <div id="instructions-text" class="white-text collapse">
+    <%= render 'instructions' %>
+  </div>
+  <br>
   <div id="leftPanel" class="col-xs-3">
     <div id="colors" class="col-xs-9 align-self-center">
       <% 3.times do %>

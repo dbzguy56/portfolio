@@ -23,6 +23,20 @@
   font-size: 40px;
 }
 
+#how-to-play-text {
+  padding-left: 15px;
+  font-size: 20px;
+
+  &:hover {
+    color: #9d9d9d;
+  }
+}
+
+#instructions-text {
+  padding-left: 15px;
+  font-size: 16px;
+}
+
 .big-font {
   font-size: 60px;
 }
@@ -32,7 +46,7 @@
   line-height: 1.673;
 }
 
-.piece {
+.piece, .example {
   background-color: #BF8040;
   text-align: center;
 }
@@ -74,6 +88,7 @@ button {
   background-color: white;
   border-radius: 8px;
   border: none;
+  color: black;
   font-size: 20px;
   margin: 10px 0px;
   width: 150px;

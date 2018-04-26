@@ -160,6 +160,13 @@ secretColorCode = []
   return
 
 
+@handleInstructClick = ->
+  text = document.getElementById('how-to-play-text').innerHTML
+  if text[text.length-2] == '+'
+    document.getElementById('how-to-play-text').innerHTML = "How to play [-]"
+  else
+    document.getElementById('how-to-play-text').innerHTML = "How to play [+]"
+
 $(document).ready ->
   turnSpans = document.querySelectorAll('#turn-span')
   turnSpans[0].style.color = "black"
@@ -179,6 +186,7 @@ $(document).ready ->
   allPieces = document.querySelectorAll('.piece')
   colorPieces = document.querySelectorAll('#colors .piece')
   colorsDiv = document.querySelector('#colors')
+  examplePieces = document.querySelectorAll('.example')
 
   colorPieces[0].style.borderRadius = "20px 0px 0px 0px"
   colorPieces[1].style.borderRadius = "0px 20px 0px 0px"
@@ -189,6 +197,14 @@ $(document).ready ->
   piecesList[3].style.borderRadius = "0px 20px 0px 0px"
   piecesList[44].style.borderRadius = "0px 0px 0px 20px"
   piecesList[47].style.borderRadius = "0px 0px 20px 0px"
+
+  j = 0
+  while j < 2
+    group = j * 4
+    examplePieces[group + 0].style.borderRadius = "20px 0px 0px 20px"
+    examplePieces[group + 3].style.borderRadius = "0px 20px 20px 0px"
+    j++
+
 
   allPieces.forEach (piece) ->
     piece.style.height = String(boardStyle.offsetHeight/12).concat('px')
