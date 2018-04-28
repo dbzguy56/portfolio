@@ -208,6 +208,7 @@ $(document).ready ->
 
   allPieces.forEach (piece) ->
     piece.style.height = String(boardStyle.offsetHeight/12).concat('px')
+    piece.style.lineHeight = piece.style.height
     return
 
   colorsDiv.style.width = String(boardStyle.offsetWidth/3).concat('px')
