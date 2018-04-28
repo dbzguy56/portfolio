@@ -22,7 +22,7 @@
        <button onclick="newGame()">Start a new game </button> </br>
     </div>
   </div>
-  <div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)">
+  <div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)" ondrop="return false;">
     <% 12.times do |r| %>
       <span id="turn-span" class="col-xs-1 white-text"><%=r+1%></span>
       <%= render 'row', r: r%>
