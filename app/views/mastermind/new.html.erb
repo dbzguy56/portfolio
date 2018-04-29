@@ -21,6 +21,11 @@
        <button id="checkButton" onclick="checkGuess()">Check row </button> </br>
        <button onclick="newGame()">Start a new game </button> </br>
     </div>
+    <div id="correct-colors" class="col-xs-12 white-text" style="visibility: hidden;">
+      </br>
+      <span class="col-xs-12"> The secret code is:</span>
+      <%= render 'row'%>
+    </div>
   </div>
   <div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)" ondrop="return false;">
     <% 12.times do |r| %>

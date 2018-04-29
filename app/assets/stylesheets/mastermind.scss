@@ -9,6 +9,19 @@
   text-align: left;
 }
 
+#correct-colors {
+  .piece, span {
+    background-color: transparent;
+    padding-left: 0px;
+  }
+  .row {
+    background-color: #bf8040;
+    border-radius: 20px;
+    padding-left: 0px;
+    width: 150px;
+  }
+}
+
 #turn-buttons {
   padding-top: 25px;
   padding-left: 0;

@@ -15,7 +15,9 @@ secretColorCode = []
   while i < 4 #new secret color code
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
+
   console.log(secretColorCode)
+  secretColors = document.querySelectorAll('#correct-colors .piece')
 
   while turn >= 0
     row = turn * 4
@@ -33,6 +35,16 @@ secretColorCode = []
         piecesList[thirdCol].classList.remove(colors[count])
       if piecesList[fourthCol].classList.contains(colors[count])
         piecesList[fourthCol].classList.remove(colors[count])
+
+      if row == 0
+        if secretColors[row].classList.contains(colors[count])
+          secretColors[row].classList.remove(colors[count])
+        if secretColors[secondCol].classList.contains(colors[count])
+          secretColors[secondCol].classList.remove(colors[count])
+        if secretColors[thirdCol].classList.contains(colors[count])
+          secretColors[thirdCol].classList.remove(colors[count])
+        if secretColors[fourthCol].classList.contains(colors[count])
+          secretColors[fourthCol].classList.remove(colors[count])
 
       if count < 4
         guessIndicatorSymbols[row + count].innerHTML = ""
@@ -54,9 +66,15 @@ secretColorCode = []
   piecesList[2].setAttribute("ondrop", "drop(event)")
   piecesList[3].setAttribute("ondrop", "drop(event)")
 
+  secretColors[0].classList.add(secretColorCode[0])
+  secretColors[1].classList.add(secretColorCode[1])
+  secretColors[2].classList.add(secretColorCode[2])
+  secretColors[3].classList.add(secretColorCode[3])
+
   turn = 0
   document.getElementById("turn-number").innerHTML = 'Turn: 1'
   document.getElementById('checkButton').style.visibility = 'visible'
+  document.getElementById('correct-colors').style.visibility = 'hidden'
 
 @allowDrop = (ev) ->
   ev.preventDefault()
@@ -75,7 +93,6 @@ secretColorCode = []
 @checkGuess = ->
   piecesList = document.querySelectorAll('#board .piece')
   row = turn * 4
-  console.log(piecesList[row])
   correctPositionGuesses = 0
   correctGuesses = 0
   secondCol = row + 1
@@ -157,6 +174,7 @@ secretColorCode = []
     else
       document.getElementById('checkButton').style.visibility = 'hidden'
       document.getElementById("turn-number").innerHTML = 'You lose!'
+      document.getElementById('correct-colors').style.visibility = 'visible'
   return
 
 
@@ -175,6 +193,13 @@ $(document).ready ->
   while i < 4
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
+
+  secretColors = document.querySelectorAll('#correct-colors .piece')
+  secretColors[0].classList.add(secretColorCode[0])
+  secretColors[1].classList.add(secretColorCode[1])
+  secretColors[2].classList.add(secretColorCode[2])
+  secretColors[3].classList.add(secretColorCode[3])
+
   #secretColorCode = ["red", "yellow", "red", "green"]
   console.log(secretColorCode)
   piecesList = document.querySelectorAll('#board .piece')
