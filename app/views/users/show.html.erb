@@ -1,0 +1,5 @@
+<% provide(:title, @user.name) %>
+<div class="center jumbotron white-text">
+  <%= gravatar_for @user %>
+  <h1><%= @user.name %>, <%= @user.email %></h1>
+</div>

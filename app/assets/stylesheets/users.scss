@@ -1,3 +1,17 @@
-// Place all the styles related to the users controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+input, textarea, select, .uneditable-input {
+  border: 1px solid #bbb;
+  color: black;
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+input {
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+form {
+  margin: 0 auto;
+  width: 700px;
+}
