@@ -16,6 +16,7 @@
 @import "mastermind";
 @import "static_pages";
 @import "users";
+@import "sessions";
 
 
 #logo {
@@ -31,4 +32,16 @@
     color: white;
     text-decoration: none;
   }
+}
+
+.navbar-nav > li > .dropdown-menu {
+  background-color: #777;
+}
+
+.navbar-nav > li > .dropdown-menu a {
+   color: white;
+
+   &:hover {
+     color: black; 
+   }
 }
