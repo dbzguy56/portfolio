@@ -1,0 +1,9 @@
+<h1> Deepak Birdi's Portfolio </h1>
+
+<p>Hello <%= @user.name %>,</p>
+
+<p>
+Welcome to Deepak Birdi's Portfolio site! Click on the link below to activate your account:
+</p>
+
+<%= link_to "Activate", edit_account_activation_url(@user.activation_token, email: @user.email) %>
