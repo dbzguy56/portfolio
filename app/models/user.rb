@@ -8,6 +8,8 @@ class User < ApplicationRecord
     uniqueness: {case_sensitive: false}
   has_secure_password
   validates :password, presence: true, length: { minimum: 5 }, allow_nil: true
+  has_many :posts, dependent: :destroy #destroys users posts as well if user is destroyed
+  has_many :comments
 
   def User.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost

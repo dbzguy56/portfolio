@@ -1,0 +1,16 @@
+<% provide(:title, "Mini-Reddit") %>
+<div class="center jumbotron white-text">
+  <h1>Mini-Reddit</h1>
+  <%= button_to "Create a new post", mini_reddit_new_path , class: "normal-btn btn btn-primary", :method => "get" %>
+</div>
+
+<div class="col-md-10 col-md-offset-1 white-text">
+  <% if @posts.any? %>
+    <ol class="all-posts">
+      <%= render @posts %>
+    </ol>
+    <%= will_paginate @posts%>
+  <% else %>
+    There seems to be nothing here :(
+  <% end %>
+</div>

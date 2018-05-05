@@ -1,0 +1,8 @@
+<div class="post">
+  <span class="title"><%= link_to post.title, post.content %></span>
+  <span class="timestamp">
+    Submitted <%= time_ago_in_words(post.created_at) %> ago by
+    <span class="user"><%= link_to post.user.name, post.user %></span>
+  </span>
+  <span class="comment"><%= link_to "Comments", "#" %></span>
+</div>
