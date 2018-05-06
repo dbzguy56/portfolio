@@ -1,8 +1,13 @@
 <div class="post">
   <span class="title"><%= link_to post.title, post.content %></span>
-  <span class="timestamp">
+  <span>
     Submitted <%= time_ago_in_words(post.created_at) %> ago by
-    <span class="user"><%= link_to post.user.name, post.user %></span>
+    <%= link_to post.user.name, post.user %>
   </span>
-  <span class="comment"><%= link_to "Comments", "#" %></span>
+  <div class="post-options" display="block">
+    <%= link_to "Comments", "#" %>
+    <% if current_user && current_user.name == post.user.name %>
+      <%= link_to "Edit", controller: "posts", action: "edit", id: post.id %>
+    <% end %>
+  </div>
 </div>

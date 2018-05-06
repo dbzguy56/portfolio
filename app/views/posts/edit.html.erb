@@ -1,2 +1,18 @@
-<h1>Post#edit</h1>
-<p>Find me in app/views/post/edit.html.erb</p>
+<% provide(:title, "Edit post | Mini-Reddit") %>
+<div class="center jumbotron white-text">
+  <h1>Update your post</h1>
+</div>
+
+<div class="col-md-6 col-md-offset-3 white-text">
+  <%= form_for(@post, url: post_update_path(params[:id])) do |f| %>
+    <%= render 'shared/post_error_messages' %>
+
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+
+    <%= f.label :content %>
+    <%= f.text_field :content, placeholder: "Place the link in this field..." %>
+
+    <%= f.submit "Update post", class: "btn btn-primary" %>
+  <% end %>
+</div>

@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   get '/mini_reddit', to: 'posts#index'
   get '/mini_reddit/new', to: 'posts#new'
   post '/mini_reddit/new', to: 'posts#create'
+  get '/mini_reddit/posts/:id', to: 'posts#show'
+  get '/mini_reddit/posts/:id/edit', to: 'posts#edit'
+  put '/mini_reddit/posts/:id', to: 'posts#update'
+  patch '/mini_reddit/posts/:id', to: 'posts#update', as: "post_update"
 
   resources :users
   resources :account_activations, only: [:edit]

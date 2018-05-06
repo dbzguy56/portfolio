@@ -15,7 +15,7 @@ activated: true,
 activated_at: 6.day.ago)
 
 Post.create!(user_id: 1,
-  title: "Mario Oddyssey Trailer",
+  title: "Mario Odyssey Trailer",
   content: "https://www.youtube.com/watch?v=5kcdRBHM7kM",
   created_at: 5.day.ago)
 
@@ -28,3 +28,8 @@ Post.create!(user_id: 1,
   title: "very happy employee",
   content: "https://i.imgur.com/M0PLQrI.gifv",
   created_at: 3.day.ago)
+
+Post.create!(user_id: 1,
+  title: "doggo",
+  content: "https://i.imgur.com/W5LUEkp.gifv",
+  created_at: Time.zone.now)
