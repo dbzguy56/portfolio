@@ -2,6 +2,48 @@
   width: auto;
 }
 
+hr {
+	border-top: 1px dotted #3b89cc;
+  width: 100%;
+}
+
+.post-comments {
+  .comment {
+    border: 1px solid #3b89cc;
+    border-radius: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    #timestamp {
+      color: #ccc;
+      font-size: 10px;
+      padding-left: 10px;
+    }
+    #comment-field {
+      display: block;
+      padding: 10px 0;
+    }
+  }
+  #comment-form {
+    margin: 10px 0;
+
+    form {
+      display: inline;
+      margin: 20px 10px 0 0;
+    }
+
+    input {
+      width: auto;
+    }
+
+    textarea {
+      border-radius: 3px;
+      height: 100px;
+      padding: 6px;
+      width: 500px;
+    }
+  }
+}
+
 .post {
   background-color: #122935;
   border-radius: 20px;
@@ -9,6 +51,9 @@
   margin: 10px 0;
   padding: 20px;
 
+  #delete-link:hover {
+    color: red;
+  }
   .post-options > a {
     padding-right: 5px;
   }

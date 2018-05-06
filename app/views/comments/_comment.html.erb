@@ -1,0 +1,8 @@
+<div class="comment">
+  <%= link_to comment.user.name, comment.user %>
+  <span id="timestamp"><%= time_ago_in_words(comment.created_at) %> ago </span>
+  <span id="comment-field"><%= comment.comment %></span>
+  <% if current_user && current_user.name == comment.user.name %>
+    <%= link_to "Delete", comment_destroy_url(@post, comment.id), method: :delete, id: "delete-link" %>
+  <% end %>
+</div>

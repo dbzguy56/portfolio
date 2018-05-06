@@ -18,7 +18,12 @@
 @import "users";
 @import "sessions";
 @import "posts";
+@import "mini_reddit";
 
+
+a:hover {
+  color: #337ab7;
+}
 
 #logo {
   float: left;
@@ -50,4 +55,8 @@
 .alert {
   margin-left: 10px;
   margin-right: 10px;
+}
+
+body {
+  margin-bottom: 750px;
 }

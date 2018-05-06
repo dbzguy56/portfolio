@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
-  before_action :logged_in_user, except: [:index]
-  before_action :correct_user,   only: [:edit, :update]
+  before_action :logged_in_user, except: [:index, :show]
+  before_action :correct_user,   only: [:edit, :update, :destroy]
 
   def index
     @posts = Post.paginate(page: params[:page], per_page: 10)
@@ -11,6 +11,9 @@ class PostsController < ApplicationController
   end
 
   def show
+    @post = Post.find(params[:id])
+    @comment = @post.comments.new
+    @comments = @post.comments.all
   end
 
   def create
@@ -30,13 +33,17 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
     if @post.update_attributes(post_params)
       flash[:success] = "Post updated"
-      redirect_to mini_reddit_path
+      redirect_back_or @post
     else
       render 'edit'
     end
   end
 
   def destroy
+    @post = Post.find(params[:id])
+    @post.destroy
+    flash[:success] = "Post deleted"
+    redirect_to request.referrer || mini_reddit_path
   end
 
   private

@@ -1,0 +1,18 @@
+<span class="title"><%= link_to post.title, post.content %></span>
+<span>
+  Submitted <%= time_ago_in_words(post.created_at) %> ago by
+  <%= link_to post.user.name, post.user %>
+</span>
+<div class="post-options" display="block">
+  <% num_comments = "" %>
+  <% if post.comments.any? %>
+    <% num_comments = post.comments.count.to_s + " " %>
+  <% end %>
+  <% num_comments += "Comments" %>
+  <%= link_to num_comments,  controller: "posts", action: "show", id: post.id %>
+  <% if current_user && current_user.name == post.user.name %>
+    <%= link_to "Edit", controller: "posts", action: "edit", id: post.id %>
+    <%= link_to "Delete", post_destroy_path(post.id), method: :delete,
+      data: { confirm: "Are you sure?" }, id: "delete-link" %>
+  <% end %>
+</div>

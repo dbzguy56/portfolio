@@ -1,1 +1,37 @@
-show
+<%= render partial: 'mini_reddit_header' %>
+
+<div class="col-md-10 col-md-offset-1 white-text">
+  <% store_location %>
+  <div class="post-comments post">
+    <%= render partial: 'post_card', locals: {post: @post} %>
+    <hr>
+    <div id="comment-form">
+    <% if logged_in? %>
+        <%= form_for(@comment, url: comment_create_path(@post.id)) do |f| %>
+          <%= render 'shared/error_messages', object: f.object %>
+          <div class="field">
+            <%= f.text_area :comment, placeholder: "Create a comment..." %>
+          </div>
+          <%= f.submit "Comment", class: "btn btn-primary" %>
+        <% end %>
+    <% else %>
+    Want to add to the discussion? <br>
+    <%= button_to "Create an account", new_user_path , class: "normal-btn btn btn-primary", :method => "get" %>
+    <%= button_to "Log in", login_path , class: "normal-btn btn btn-primary", :method => "get" %>
+    <% end %>
+    </div>
+    <hr>
+    <% if @post.comments.any? %>
+      <% num_comments = @post.comments.count.to_s + " " %>
+    <% end %>
+    <% num_comments += "Comments" %>
+    <%= num_comments %>
+    <% if @post.comments.any? %>
+      <ol>
+        <%= render @comments %>
+      </ol>
+    <% else %>
+      There seems to be nothing here :(
+    <% end %>
+  </div>
+</div>
