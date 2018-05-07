@@ -1,13 +1,14 @@
+<%= javascript_include_tag params[:controller] %>
 <%= render partial: 'mini_reddit_header' %>
 
-<div class="col-md-10 col-md-offset-1 white-text">
+<div class="col-md-10 col-md-offset-1 white-text" onload="centerPage()">
   <% store_location %>
   <div class="post-comments post">
     <%= render partial: 'post_card', locals: {post: @post} %>
     <hr>
     <div id="comment-form">
     <% if logged_in? %>
-        <%= form_for(@comment, url: comment_create_path(@post.id)) do |f| %>
+        <%= form_for(@comment, url: comment_create_path(@post.id, @comment.id)) do |f| %>
           <%= render 'shared/error_messages', object: f.object %>
           <div class="field">
             <%= f.text_area :comment, placeholder: "Create a comment..." %>
@@ -28,7 +29,7 @@
     <%= num_comments %>
     <% if @post.comments.any? %>
       <ol>
-        <%= render @comments %>
+        <%= nested_comments @comments.arrange(order: :created_at) %>
       </ol>
     <% else %>
       There seems to be nothing here :(

@@ -7,6 +7,17 @@ hr {
   width: 100%;
 }
 
+.nested-comments {
+  margin-left: 30px;
+}
+
+#link-look-alike {
+  color: #337ab7;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .post-comments {
   .comment {
     border: 1px solid #3b89cc;
@@ -54,11 +65,16 @@ hr {
   #delete-link:hover {
     color: red;
   }
-  .post-options > a {
-    padding-right: 5px;
+  .post-options {
+    margin-top: 10px;
+
+    a, span {
+      padding-right: 20px;
+    }
   }
   .title {
     font-size: 20px;
+    margin-bottom: 10px;
   }
 }
 

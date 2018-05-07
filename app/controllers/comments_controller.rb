@@ -1,6 +1,6 @@
 class CommentsController < ApplicationController
   before_action :logged_in_user
-  before_action :correct_user
+  before_action :correct_user, only: :destroy
 
   def destroy
     @post = Post.find(params[:post_id])
@@ -16,7 +16,7 @@ class CommentsController < ApplicationController
     @comment.user_id = current_user.id
     if @comment.save
       flash[:success] = "Comment created!"
-      redirect_to post_show_path(@post)
+      redirect_to post_show_path(@post, anchor: "comment-id-#{@comment.id}")
     else
       puts @comment.errors.full_messages
       redirect_to root_url
@@ -29,7 +29,7 @@ class CommentsController < ApplicationController
   private
 
     def comment_params
-      params.require(:comment).permit(:comment)
+      params.require(:comment).permit(:comment, :parent_id)
     end
 
     # Confirms the correct user.

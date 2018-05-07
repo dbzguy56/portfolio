@@ -1,8 +1,29 @@
+<span id="comment-id-<%=comment.id%>" style="display: block; height: 115px;  margin-top: -115px;visibility: hidden;"></span>
 <div class="comment">
   <%= link_to comment.user.name, comment.user %>
   <span id="timestamp"><%= time_ago_in_words(comment.created_at) %> ago </span>
   <span id="comment-field"><%= comment.comment %></span>
-  <% if current_user && current_user.name == comment.user.name %>
-    <%= link_to "Delete", comment_destroy_url(@post, comment.id), method: :delete, id: "delete-link" %>
-  <% end %>
+  <div class="post-options" display="block">
+    <% if logged_in? %>
+      <span data-toggle="collapse" data-target=".reply-textarea<%=comment.id%>">
+        <span id="link-look-alike"> Reply</span>
+      </span>
+    <% else %>
+      <%= link_to "Reply", login_path %>
+    <% end %>
+    <% if current_user && current_user.name == comment.user.name %>
+      <%= link_to "Delete", comment_destroy_url(@post, comment.id), method: :delete, id: "delete-link" %>
+    <% end %>
+    <% if logged_in? %>
+      <div id="comment-form" class="reply-textarea<%=comment.id%> white-text collapse">
+        <%= form_for(@comment, url: comment_create_path(@post.id, comment)) do |f| %>
+          <%= render 'shared/error_messages', object: f.object %>
+          <%  @parent = comment.id %>
+          <%= f.hidden_field :parent_id, value: @parent if @parent.present? %>
+          <%= f.text_area :comment, placeholder: "Create a comment..." %>
+          <%= f.submit "Comment", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>

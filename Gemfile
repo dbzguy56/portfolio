@@ -36,6 +36,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'popper_js', '~> 1.12.9'
 gem 'will_paginate', '3.1.6'
 gem 'bootstrap-will_paginate', '1.0.0'
+gem 'ancestry'
 
 
 group :development, :test do
