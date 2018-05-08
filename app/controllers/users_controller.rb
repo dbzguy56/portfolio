@@ -4,6 +4,12 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    @posts = @user.posts
+    @comments = @user.comments
+    @feed = @posts + @comments
+    @feed = @feed.sort_by(&:created_at).reverse
+    @feed = @feed.paginate(page: params[:page], per_page: 10)
+    puts @feed.inspect
   end
 
   def new

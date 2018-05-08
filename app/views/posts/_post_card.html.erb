@@ -1,7 +1,8 @@
+
 <span class="title"><%= link_to post.title, post.content %></span>
-<span>
+<span display="block">
   Submitted <%= time_ago_in_words(post.created_at) %> ago by
-  <%= link_to post.user.name, post.user %>
+  <%= link_to post.user.name, post.user %> <%= link_to gravatar_for(post.user, size: 50), post.user %>
 </span>
 <div class="post-options" display="block">
   <% num_comments = "" %>

@@ -1,4 +1,15 @@
-<div class="center jumbotron white-text">
-  <h1><%= link_to "Mini-Reddit", mini_reddit_path, id: "mini-reddit-logo" %></h1>
-  <%= button_to "Create a new post", mini_reddit_new_path , class: "normal-btn btn btn-primary", :method => "get" %>
+<div id="mini-reddit-header" class="jumbotron white-text">
+  <div id="left-header">
+  </div>
+  <div class="center">
+    <h1><%= link_to "Mini-Reddit", mini_reddit_path, id: "mini-reddit-logo" %></h1>
+    <%= button_to "Create a new post", mini_reddit_new_path , class: "normal-btn btn btn-primary", :method => "get" %>
+  </div>
+  <div id="right-header">
+    <% if logged_in? %>
+      <%= link_to gravatar_for(current_user), current_user %>
+      <%= current_user.name %> <br>
+      <%= current_user.comments.count %> Comments, <%= current_user.posts.count %> Posts
+    <% end %>
+  </div>
 </div>

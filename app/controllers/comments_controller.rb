@@ -18,8 +18,8 @@ class CommentsController < ApplicationController
       flash[:success] = "Comment created!"
       redirect_to post_show_path(@post, anchor: "comment-id-#{@comment.id}")
     else
-      puts @comment.errors.full_messages
-      redirect_to root_url
+      flash[:warning] = "Your comment cannot be saved! Make sure you did not submit an empty comment."
+      redirect_to post_show_path(@post)
     end
   end
 

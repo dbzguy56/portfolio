@@ -6,7 +6,7 @@
 
 <div class="col-md-10 col-md-offset-1 white-text">
   <% if @posts.any? %>
-    <ol class="all-posts">
+    <ol>
       <%= render @posts %>
     </ol>
     <%= will_paginate @posts%>

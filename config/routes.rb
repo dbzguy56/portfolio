@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   post '/mini_reddit/posts/:post_id', to: 'comments#create', as: 'comment_create'
   delete '/mini_reddit/posts/:post_id/comments/:id', to: 'comments#destroy', as: 'comment_destroy'
 
-  
+
   post '/mini_reddit/posts/:post_id/comments/:comment_id', to: 'comments#create', as: 'reply_create'
   delete '/mini_reddit/posts/:post_id/comments/:comment_id/reply/:id', to: 'comments#destroy', as: 'reply_destroy'
 

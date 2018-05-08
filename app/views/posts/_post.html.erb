@@ -1,3 +1,7 @@
+<% if current_page?(user_path(post.user.id)) %>
+  <br>
+  <span><%= post.user.name %> created a post: </span>
+<% end %>
 <div class="post">
-  <%= render partial: 'post_card', locals: {post: post} %>
+  <%= render partial: 'posts/post_card', locals: {post: post} %>
 </div>
