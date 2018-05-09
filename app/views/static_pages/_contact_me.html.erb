@@ -1,0 +1,44 @@
+<%= image_tag('contactMe') %>
+
+<div id="contact-options">
+  <div class="input-group">
+    <input type="text" class="form-control" value="" readonly/>
+    <div class="input-group-btn">
+      <button class="btn btn-secondary">
+        Open Resume
+      </button>
+    </div>
+  </div>
+
+  <br>
+  <div class="input-group">
+    <input type="text" class="form-control" value="https://github.com/dbzguy56" readonly/>
+    <div class="input-group-btn">
+      <a href="https://github.com/dbzguy56">
+      <button id="github-link" class="btn btn-secondary">
+        <%= image_tag('githubLogo') %>
+      </button>
+      </a>
+    </div>
+  </div>
+
+  <br>
+  <div class="input-group">
+    <input id="my-email" type="text" class="form-control" value="deepakbirdi25@gmail.com" readonly/>
+    <div class="input-group-btn">
+        <button class="btn btn-secondary" onclick="copyEmail()">
+          Copy email
+        </button>
+    </div>
+  </div>
+
+  <br>
+  <div class="input-group">
+    <input type="text" class="form-control" value="(519) 504-1995" readonly/>
+    <div class="input-group-btn">
+      <button class="btn btn-secondary">
+        <%="\u260E" %>
+      </button>
+    </div>
+  </div>
+</div>

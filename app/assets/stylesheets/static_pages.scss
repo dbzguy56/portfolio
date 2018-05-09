@@ -13,6 +13,9 @@
 }
 
 body {
+  img {
+    border-radius: 20px;
+  }
   margin-top: 60px;
   background-color: #0a0a0f;
 }
@@ -33,4 +36,139 @@ body {
   min-width: 1000px;
   transform: translateY(-20%) rotate(0deg);
   z-index: -1;
+}
+
+#about-me {
+  img {
+    float: left;
+    height: 500px;
+    padding-right: 20px;
+  }
+
+  #about-me-text {
+    font-size: 16px;
+    line-height: 26px;
+    margin: 0 auto;
+    width: 975px;
+  }
+}
+
+#languages {
+  margin-top: 50px;
+  margin-left: 50px;
+  img {
+    margin: 10px;
+    height: 100px;
+  }
+}
+
+#projects {
+  #project {
+    display: inline-block;
+    margin: 50px auto;
+    p {
+      margin-left: 30px;
+    }
+    #portfolio-github {
+      img {
+        float: unset;
+        height: 150px;
+      }
+    }
+  }
+  img {
+    height: 500px;
+  }
+}
+
+hr {
+  border-top: 1px dotted #3b89cc;
+  padding-bottom: 25px;
+  width: 100%
+}
+
+#contact-me {
+  img{
+    border-radius: 20px;
+  }
+  img, .input-group {
+    display: inline-block;
+  }
+  #contact-options {
+    display: inline-block;
+    margin: auto 20px;
+    vertical-align: middle;
+
+    .input-group {
+      display: table;
+    }
+    .input-group-btn, .form-control {
+      display: block;
+    }
+
+    button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      background-color: #ccc;
+      margin: 0;
+    }
+
+    button, input {
+      height: 40px;
+    }
+
+    #github-link {
+      img {
+        height: 25px;
+      }
+    }
+  }
+}
+
+
+.image-left {
+  margin: 0 auto 150px auto;
+  width: 1200px;
+  p {
+    font-size: 16px;
+    text-align: left;
+  }
+  img {
+    margin-right: 20px;
+    height: 300px;
+    float: left;
+  }
+}
+
+.image-right {
+  margin: 0 auto 150px auto;
+  width: 1200px;
+  p {
+    font-size: 16px;
+    text-align: left;
+  }
+  img {
+    margin-left: 20px;
+    height: 250px;
+    float: right;
+  }
+}
+
+#smaller-projects {
+  p {
+    font-size: 16px;
+    margin: 50px auto;
+    width: 1200px;
+  }
+  img {
+    margin: 20px;
+    height: 300px;
+  }
+}
+
+.gray-background {
+  img {
+    background: darkslategray;
+    border-radius: 5px;
+  }
 }

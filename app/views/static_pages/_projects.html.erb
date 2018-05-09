@@ -1,0 +1,53 @@
+<div id="project" class="image-left">
+  <h2><%= link_to image_tag('mastermindScreenshot'), '/mastermind' %>Mastermind</h2>
+  <p> This project and the next project are right here on this website!<p>
+  <p> This is a game that I first made in Ruby and was played using a command line.</p>
+  <p>The goal of the game is to find the secret color code that the computer has randomly
+  picked. You can see the results of the color combination you picked in the previous turns.
+  Using the previous rows and their results, it can give you a better guess at the right
+  combination. Click on the image to go there and see if you are a mastermind! </p>
+
+  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
+  logic and handle all of the events.</p>
+
+  <br>
+
+  <div id="portfolio-github" class="graycenter">
+    <p> You can find the source code on github by clicking the image below: </p>
+    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+  </div>
+</div>
+
+<div id="project" class="image-left">
+  <h2><%= link_to image_tag('miniRedditScreenshot'), '/mini_reddit' %>Mini-Reddt</h2>
+  <p> This is a reddit clone I made. </p>
+  <p>You can create an account using an email and start creating posts! </p>
+  <p>You can link videos or images that everyone on the website can see. </p>
+  <p>Other people can comment on your posts and reply to each other's
+  comments. You can also view a person's profile to see what they have posted and what
+  they have commented on. </p>
+
+  <p> Ruby on Rails was mostly used to create all the users, redirect them to the
+  right pages and for post/comment creation. </p>
+
+  <br>
+
+  <div id="portfolio-github" class="center">
+    <p> You can find the source code on github by clicking the image below: </p>
+    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+  </div>
+</div>
+
+
+<div id="smaller-projects" class="center white-text">
+  <h2> Smaller projects </h2>
+  <%= link_to image_tag('tictactoeScreenshot'), 'https://github.com/dbzguy56/tictactoe_in_python' %>
+  <%= link_to image_tag('snakeScreenshot'), 'https://github.com/dbzguy56/snake_in_c' %>
+  <%= link_to image_tag('puzzleSliderScreenshot'), 'https://github.com/dbzguy56/sliding_puzzle' %>
+  <p> These are the smaller projects I have made in the past that got the ball rolling. The first one
+  being <%= link_to 'Tic Tac Toe', 'https://en.wikipedia.org/wiki/Tic-tac-toe' %>
+  in Python using the Pygame library, the second is <%= link_to 'Snake', 'https://en.wikipedia.org/wiki/Snake_(video_game_genre)' %>
+  which was made in C using the SDL library and the last one being
+  <%= link_to 'Puzzle Slider', 'https://en.wikipedia.org/wiki/Sliding_puzzle'%> made in C# using Visual Studio. You can click on any of the
+  images to be redirected to the repositories that contain the source code of each project on github.</p>
+</div>
