@@ -11,9 +11,13 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.find(params[:id])
-    @comment = @post.comments.new
-    @comments = @post.comments.all
+    if Post.exists?(id: params[:id])
+      @post = Post.find(params[:id])
+      @comment = @post.comments.new
+      @comments = @post.comments.all
+    else
+      redirect_to mini_reddit_path
+    end
   end
 
   def create

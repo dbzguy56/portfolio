@@ -9,7 +9,8 @@
   <% if post.comments.any? %>
     <% num_comments = post.comments.count.to_s + " " %>
   <% end %>
-  <% num_comments += "Comments" %>
+  <% num_comments += "Comment" %>
+  <% num_comments += "s" unless post.comments.count == 1 %>
   <%= link_to num_comments,  controller: "posts", action: "show", id: post.id %>
   <% if current_user && current_user.name == post.user.name %>
     <%= link_to "Edit", controller: "posts", action: "edit", id: post.id %>
