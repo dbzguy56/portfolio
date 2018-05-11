@@ -29,7 +29,7 @@
         <%= link_to "Delete", comment_destroy_url(@post, comment.id), method: :delete, id: "delete-link" %>
       <% end %>
       <% if logged_in? %>
-        <div id="comment-form" class="reply-textarea<%=comment.id%> white-text collapse">
+        <div id="comment-form" class="reply-textarea<%=comment.id%> collapse">
           <%= form_for(@comment, url: comment_create_path(@post.id, comment)) do |f| %>
             <%= render 'shared/error_messages', object: f.object %>
             <%  @parent = comment.id %>

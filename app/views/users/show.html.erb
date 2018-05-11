@@ -1,12 +1,12 @@
 <% provide(:title, @user.name) %>
-<div class="center jumbotron white-text">
+<div class="center jumbotron  ">
   <%= gravatar_for @user %>
   <h1><%= @user.name %></h1>
   Member since <%= @user.created_at.strftime("%B %d, %Y") %><br>
   <%= @user.comments.count %> Comments, <%= @user.posts.count %> Posts
 </div>
 
-<div class="col-md-10 col-md-offset-1 white-text user-feed">
+<div class="col-md-10 col-md-offset-1   user-feed">
   <h2>User activity:</h2>
   <% if @feed.any? %>
     <ol>

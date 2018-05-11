@@ -3,11 +3,11 @@
 <% store_location %>
 <div class="col-xs-2"></div>
 <div class="col-xs-8">
-  <div class="center jumbotron white-text">
+  <div class="center jumbotron ">
     <h1>Mastermind</h1>
   </div>
-  <p id="how-to-play-text" class="white-text" data-toggle="collapse" data-target="#instructions-text" onclick="handleInstructClick()">How to play [+]</p>
-  <div id="instructions-text" class="white-text collapse">
+  <p id="how-to-play-text"   data-toggle="collapse" data-target="#instructions-text" onclick="handleInstructClick()">How to play [+]</p>
+  <div id="instructions-text" class=" collapse">
     <%= render 'instructions' %>
   </div>
   <br>
@@ -19,19 +19,19 @@
     </div>
     <div class="col-xs-2"></div>
     <div id="turn-buttons" class="col-xs-12">
-      <div id="turn-number" class="white-text">Turn: 1</div> </br>
+      <div id="turn-number"  >Turn: 1</div> </br>
        <button id="checkButton" onclick="checkGuess()">Check row </button> </br>
        <button onclick="newGame()">Start a new game </button> </br>
     </div>
-    <div id="correct-colors" class="col-xs-12 white-text" style="visibility: hidden;">
+    <div id="correct-colors" class="col-xs-12 " style="visibility: hidden;">
       </br>
       <span class="col-xs-12"> The secret code is:</span>
       <%= render 'row'%>
     </div>
   </div>
-  <div id="board" class="col-xs-4 webd-font" ondragover="allowDrop(event)" ondrop="return false;">
+  <div id="board" class="col-xs-4 webd-font black-text" ondragover="allowDrop(event)" ondrop="return false;">
     <% 12.times do |r| %>
-      <span id="turn-span" class="col-xs-1 white-text"><%=r+1%></span>
+      <span id="turn-span" class="col-xs-1 "><%=r+1%></span>
       <%= render 'row', r: r%>
     <% end %>
   </div>
