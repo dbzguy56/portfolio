@@ -87,9 +87,6 @@ hr {
 }
 
 #contact-me {
-  img{
-    border-radius: 20px;
-  }
   img, .input-group {
     display: inline-block;
   }
@@ -119,6 +116,12 @@ hr {
     #github-link {
       img {
         height: 25px;
+      }
+    }
+
+    #linkedIn-link {
+      img {
+        border-radius: 0;
       }
     }
   }
