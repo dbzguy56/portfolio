@@ -20,20 +20,25 @@ body {
   background-color: #0a0a0f;
 }
 
+#intro-typing {
+  max-width: 100%;
+  min-width: 1000px;
+  transform: translateY(-20%);
+}
+
 #intro-text {
   position: absolute;
-  left: 0;
-  top: 25%;
+  left: 10%;
+  top: 40%;
   min-width: 500px;
-  width: 100%;
+  width: 75%;
   text-align: center;
 }
 
 #typing-video {
   filter: blur(5px);
-  max-width: 100%;
-  min-width: 1000px;
-  transform: translateY(-20%) rotate(0deg);
+  transform: translateY(-15%);
+
   z-index: -1;
 }
 

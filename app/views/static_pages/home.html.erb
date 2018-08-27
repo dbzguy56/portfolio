@@ -1,6 +1,6 @@
 <%= javascript_include_tag params[:controller] %>
 <% store_location %>
-<div class="container-fluid center jumbotron">
+<div class="container-fluid center jumbotron" id="intro-typing">
   <%= video_tag "typing.mp4", autoplay: :autoplay, muted: true, id: "typing-video", class: "img-responsive center-block" %>
   <h1 class="display-3" id="intro-text">  </h1>
 </div>
