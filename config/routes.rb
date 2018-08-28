@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
+
   root 'static_pages#home'
 
   get '/mastermind', to: 'mastermind#new'
+  get '/guess_who', to: 'guess_who#new'
   get '/signup', to: 'users#new'
   post '/signup', to: 'users#create'
 
