@@ -13,5 +13,16 @@ typeWriter = ->
     i++
     setTimeout(typeWriter, typingSpeed)
 
+headerTransparency =->
+  if $(window).scrollTop() > 100
+    $('.navbar-inverse').removeClass 'header-bg-clear'
+    $('.navbar-inverse').addClass 'header-bg-unclear'
+  else
+    $('.navbar-inverse').addClass 'header-bg-clear'
+    $('.navbar-inverse').removeClass 'header-bg-unclear'
+
 $(document).ready ->
   typeWriter()
+  $('.navbar-inverse').addClass 'header-bg-clear'
+  $(window).on 'scroll', ->
+    headerTransparency()
