@@ -38,6 +38,8 @@ gem 'will_paginate', '3.1.6'
 gem 'bootstrap-will_paginate', '1.0.0'
 gem 'ancestry'
 
+gem 'threejs-rails', git: 'git://github.com/marvindanig/threejs-rails.git'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
