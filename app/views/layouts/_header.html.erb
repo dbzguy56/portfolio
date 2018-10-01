@@ -1,35 +1,39 @@
-<header class="navbar navbar-fixed-top navbar-inverse">
-  <div class="container">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top header-bg-unclear" id="main-navbar">
+  <div class="container-fluid mx-5">
     <%= link_to "Deepak Birdi", root_path, id: "logo" %>
-    <nav>
-      <ul class="nav navbar-nav navbar-right">
-        <li><%= link_to "Home", root_path %></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><%= link_to "Home", root_path, class: "nav-link" %></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
             Games <b class="caret"></b>
           </a>
-          <ul class="dropdown-menu">
-            <li><%= link_to "Mastermind", mastermind_path %></li>
-            <li><%= link_to "3D Painter (Under construction!)", painter_path %></li>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li class="dropdown-item"><%= link_to "Mastermind", mastermind_path %></li>
+            <li class="dropdown-item"><%= link_to "3D Painter (Under construction!)", painter_path %></li>
           </ul>
         </li>
-        <li><%= link_to "Mini-Reddit", mini_reddit_path %></li>
+        <li class="nav-item nav-link"><%= link_to "Mini-Reddit", mini_reddit_path, class: "nav-link" %></li>
         <% if logged_in? %>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
               Account <b class="caret"></b>
             </a>
-            <ul class="dropdown-menu">
-              <li><%= link_to "Profile", current_user %></li>
-              <li><%= link_to "Settings", edit_user_path(current_user) %></li>
-              <li class="divider"></li>
-              <li><%= link_to "Log out", logout_path, method: :delete %></li>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li class="dropdown-item"><%= link_to "Profile", current_user %></li>
+              <li class="dropdown-item"><%= link_to "Settings", edit_user_path(current_user) %></li>
+              <li class="dropdown-divider"></li>
+              <li class="dropdown-item"><%= link_to "Log out", logout_path, method: :delete %></li>
             </ul>
           </li>
         <% else %>
-          <li><%= link_to "Log in", login_path %></li>
+          <li class="nav-item nav-link"><%= link_to "Log in", login_path, class: "nav-link" %></li>
         <% end %>
       </ul>
-    </nav>
+    </div>
   </div>
-</header>
+</nav>
