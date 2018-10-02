@@ -1,27 +1,31 @@
 textToBeTyped = "Hello, my name is Deepak and I am a self-taught developer :)"
 i = 0
 typingSpeed = 80
+collapsed = true
 
 @copyEmail = ->
   copyEmail = document.getElementById("my-email")
   copyEmail.select()
   document.execCommand("Copy")
 
+
 ###
-#@removeBgColor = ->
-  a = document.querySelectorAll('.dropdown .unclear-bg-color')
-  if (a.length != 0)
-    $('.dropdown').removeClass 'unclear-bg-color'
-    $('.dropdown').addClass 'clear-bg-color'
+#@addBgColor = ->
+
+  if (collapsed)
+    $('.navbar').removeClass 'header-bg-clear'
+    $('.navbar').addClass 'header-bg-unclear'
   else
-    $('.dropdown').removeClass 'clear-bg-color'
-    $('.dropdown').addClass 'unclear-bg-color'
-###
+    $('.navbar').addClass 'header-bg-clear'
+    $('.navbar').removeClass 'header-bg-unclear'
+  collapsed = !collapsed
+
 typeWriter = ->
   if (i < textToBeTyped.length)
     document.getElementById('intro-text').innerHTML += textToBeTyped.charAt(i)
     i++
     setTimeout(typeWriter, typingSpeed)
+
 
 headerTransparency =->
   if $(window).scrollTop() > 100
@@ -30,11 +34,17 @@ headerTransparency =->
   else
     $('.navbar').addClass 'header-bg-clear'
     $('.navbar').removeClass 'header-bg-unclear'
+###
 
 $(document).ready ->
-  typeWriter()
+  #typeWriter()
 
-
+###
   $('.navbar').addClass 'header-bg-clear'
   $(window).on 'scroll', ->
     headerTransparency()
+
+  $('#collapsable-btn').on 'hide.bs.collapse', (e) ->
+    console.log("oo")
+    return
+###

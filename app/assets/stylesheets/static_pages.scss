@@ -47,26 +47,21 @@ body {
 }
 
 #about-me {
-  img {
-    float: left;
-    height: 500px;
-    padding-right: 20px;
-  }
-
   #about-me-text {
     font-size: 16px;
     line-height: 26px;
     margin: 0 auto;
-    width: 975px;
   }
 }
 
 #languages {
-  margin-top: 50px;
-  margin-left: 50px;
   img {
-    margin: 10px;
     height: 100px;
+    margin: 10px auto;
+    width: auto;
+  }
+  .row {
+    display: block;
   }
 }
 
@@ -77,15 +72,13 @@ body {
     p {
       margin-left: 30px;
     }
-    #portfolio-github {
-      img {
-        float: unset;
-        height: 150px;
-      }
-    }
   }
+}
+
+#portfolio-github {
   img {
-    height: 500px;
+    float: unset;
+    height: 150px;
   }
 }
 
@@ -96,22 +89,13 @@ hr {
 }
 
 #contact-me {
-  img, .input-group {
-    display: inline-block;
-  }
   #contact-options {
     display: inline-block;
     margin: auto 20px;
     vertical-align: middle;
 
-    .input-group {
-      display: table;
-    }
-    .input-group-btn, .form-control {
-      display: block;
-    }
-
     button {
+      color: black;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       background-color: #ccc;
@@ -136,40 +120,10 @@ hr {
   }
 }
 
-
-.image-left {
-  margin: 0 auto 150px auto;
-  width: 1200px;
-  p {
-    font-size: 16px;
-    text-align: left;
-  }
-  img {
-    margin-right: 20px;
-    height: 300px;
-    float: left;
-  }
-}
-
-.image-right {
-  margin: 0 auto 150px auto;
-  width: 1200px;
-  p {
-    font-size: 16px;
-    text-align: left;
-  }
-  img {
-    margin-left: 20px;
-    height: 250px;
-    float: right;
-  }
-}
-
 #smaller-projects {
   p {
     font-size: 16px;
     margin: 50px auto;
-    width: 1200px;
   }
   img {
     margin: 20px;

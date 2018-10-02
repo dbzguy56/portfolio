@@ -1,49 +1,77 @@
-<div id="project" class="image-left">
-  <h2><%= link_to image_tag('mastermindScreenshot'), '/mastermind' %>Mastermind</h2>
-  <p> This project and the next project are right here on this website!<p>
-  <p> This is a game that I first made in Ruby and was played using a command line.</p>
-  <p>The goal of the game is to find the secret color code that the computer has randomly
-  picked. You can see the results of the color combination you picked in the previous turns.
-  Using the previous rows and their results, it can give you a better guess at the right
-  combination. Click on the image to go there and see if you are a mastermind! </p>
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-12 col-xl-7">
+    <%= link_to image_tag('mastermindScreenshot', class: "img-fluid"), mastermind_path %>
+    </div>
 
-  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
-  logic and handle all of the events.</p>
+    <div class="col">
+      <h2 class="center">Mastermind</h2>
+      <p> This project and the next project are right here on this website!<p>
+      <p> This is a game that I first made in Ruby and was played using a command line.</p>
+      <p>The goal of the game is to find the secret color code that the computer has randomly
+      picked. You can see the results of the color combination you picked in the previous turns.
+      Using the previous rows and their results, it can give you a better guess at the right
+      combination. Click on the image to go there and see if you are a mastermind! </p>
 
-  <br>
+      <p> Javascript/Coffeescript was mostly used for this project to handle all of the
+      logic and handle all of the events.</p>
 
-  <div id="portfolio-github" class="graycenter">
-    <p> You can find the source code on github by clicking the image below: </p>
-    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+      <br>
+
+      <div id="portfolio-github" class="graycenter">
+        <p> You can find the source code on github by clicking the image below: </p>
+        <div class="gray-background text-center">
+          <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="project" class="image-left">
-  <h2><%= link_to image_tag('miniRedditScreenshot'), '/mini_reddit' %>Mini-Reddt</h2>
-  <p> This is a reddit clone I made. </p>
-  <p>You can create an account using an email and start creating posts! </p>
-  <p>You can link videos or images that everyone on the website can see. </p>
-  <p>Other people can comment on your posts and reply to each other's
-  comments. You can also view a person's profile to see what they have posted and what
-  they have commented on. </p>
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-12 col-xl-7">
+      <%= link_to image_tag('miniRedditScreenshot', class: "img-fluid"), mini_reddit_path, class: "img-fluid" %>
+    </div>
 
-  <p> Ruby on Rails was mostly used to create all the users, redirect them to the
-  right pages and for post/comment creation. </p>
+    <div class="col">
+      <h2 class="center">Mini-Reddt</h2>
+      <p> This is a reddit clone I made. </p>
+      <p>You can create an account using an email and start creating posts! </p>
+      <p>You can link videos or images that everyone on the website can see. </p>
+      <p>Other people can comment on your posts and reply to each other's
+      comments. You can also view a person's profile to see what they have posted and what
+      they have commented on. </p>
 
-  <br>
+      <p> Ruby on Rails was mostly used to create all the users, redirect them to the
+      right pages and for post/comment creation. </p>
 
-  <div id="portfolio-github" class="center">
-    <p> You can find the source code on github by clicking the image below: </p>
-    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+      <br>
+
+      <div id="portfolio-github" class="text-center">
+        <p> You can find the source code on github by clicking the image below: </p>
+        <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+      </div>
+    </div>
   </div>
 </div>
 
 
-<div id="smaller-projects" class="center  ">
-  <h2> Smaller projects </h2>
-  <%= link_to image_tag('tictactoeScreenshot'), 'https://github.com/dbzguy56/tictactoe_in_python' %>
-  <%= link_to image_tag('snakeScreenshot'), 'https://github.com/dbzguy56/snake_in_c' %>
-  <%= link_to image_tag('puzzleSliderScreenshot'), 'https://github.com/dbzguy56/sliding_puzzle' %>
+
+<div class="container py-4">
+  <h2 class="center">Smaller projects</h2>
+  <div class="row py-2">
+    <div class="col-4">
+      <%= link_to image_tag('tictactoeScreenshot', class: "img-fluid"), 'https://github.com/dbzguy56/tictactoe_in_python'%>
+    </div>
+    <div class="col-4">
+      <%= link_to image_tag('snakeScreenshot', class: "img-fluid"), 'https://github.com/dbzguy56/snake_in_c', class: "img-fluid" %>
+    </div>
+    <div class="col-4">
+      <%= link_to image_tag('puzzleSliderScreenshot', class: "img-fluid"), 'https://github.com/dbzguy56/sliding_puzzle', class: "img-fluid" %>
+    </div>
+  </div>
+
   <p> These are the smaller projects I have made in the past that got the ball rolling. The first one
   being <%= link_to 'Tic Tac Toe', 'https://en.wikipedia.org/wiki/Tic-tac-toe' %>
   in Python using the Pygame library, the second is <%= link_to 'Snake', 'https://en.wikipedia.org/wiki/Snake_(video_game_genre)' %>

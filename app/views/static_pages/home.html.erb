@@ -1,26 +1,27 @@
 <%= javascript_include_tag params[:controller] %>
 <% store_location %>
+
+<!---
 <div class="container-fluid center jumbotron" id="intro-typing">
   <%= video_tag "typing.mp4", autoplay: :autoplay, muted: true, id: "typing-video", class: "img-responsive center-block" %>
   <h1 class="display-3" id="intro-text">  </h1>
 </div>
+--->
 
-<h1 class="center">About me</h1> <br>
+<h1 class="center pt-md-3">About me</h1> <br>
 <div id="about-me">
-  <div id="about-me-text">
     <%= render partial: "about_me" %>
-  </div>
 </div>
 
 <hr>
+<h1 class="center">My languages / technologies</h1>
 <div id="languages" class="center">
-  <h1 class="center">My languages/technologies</h1>
   <%= render partial: "languages" %>
 </div>
 
 <hr>
-<div id="projects" class="center">
-  <h1 class="center">My projects</h1>
+<h1 class="center">My projects</h1>
+<div id="projects">
   <%= render partial: "projects" %>
 </div>
 

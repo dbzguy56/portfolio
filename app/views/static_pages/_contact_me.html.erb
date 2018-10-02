@@ -1,58 +1,66 @@
-<%= image_tag('contactMe') %>
-
-<div id="contact-options">
-  <div class="input-group">
-    <input type="text" class="form-control" value="Deepak Birdi" readonly/>
-    <div class="input-group-btn">
-      <a href="https://drive.google.com/file/d/1B1YH_j6bg7hxlBLOX4zgcY0tcgINFq_a/view" target="_blank">
-        <button class="btn btn-secondary">
-          Open resume
-        </button>
-      </a>
+<div class="container pb-5">
+  <div class="row">
+    <div class="col-lg-3">
     </div>
-  </div>
-
-  <br>
-  <div class="input-group">
-    <input type="text" class="form-control" value="Deepak's LinkedIn" readonly/>
-    <div class="input-group-btn">
-      <a href="https://www.linkedin.com/in/deepak-birdi-438244169/" target="_blank">
-        <button id="linkedIn-link" class="btn btn-secondary">
-          <%= image_tag('linkedInLogo') %>
-        </button>
-      </a>
+    <div class="col-md-12 col-lg-3 py-3">
+      <%= image_tag('contactMe') %>
     </div>
-  </div>
 
-  <br>
-  <div class="input-group">
-    <input type="text" class="form-control" value="Deepak's Github" readonly/>
-    <div class="input-group-btn">
-      <a href="https://github.com/dbzguy56" target="_blank">
-        <button id="github-link" class="btn btn-secondary">
-          <%= image_tag('githubLogo') %>
-        </button>
-      </a>
-    </div>
-  </div>
+    <div class="col-sm-12 col-lg-4" id="contact-options">
+      <div class="input-group">
+        <input type="text" class="form-control" value="Deepak Birdi" readonly/>
+        <div class="input-group-btn">
+          <a href="https://drive.google.com/file/d/1B1YH_j6bg7hxlBLOX4zgcY0tcgINFq_a/view" target="_blank">
+            <button class="btn btn-secondary">
+              Open resume
+            </button>
+          </a>
+        </div>
+      </div>
 
-  <br>
-  <div class="input-group">
-    <input id="my-email" type="text" class="form-control" value="deepakbirdi25@gmail.com" readonly/>
-    <div class="input-group-btn">
-        <button class="btn btn-secondary" onclick="copyEmail()">
-          Copy email
-        </button>
-    </div>
-  </div>
+      <br>
+      <div class="input-group">
+        <input type="text" class="form-control" value="Deepak's LinkedIn" readonly/>
+        <div class="input-group-btn">
+          <a href="https://www.linkedin.com/in/deepak-birdi-438244169/" target="_blank">
+            <button id="linkedIn-link" class="btn btn-secondary">
+              <%= image_tag('linkedInLogo') %>
+            </button>
+          </a>
+        </div>
+      </div>
 
-  <br>
-  <div class="input-group">
-    <input type="text" class="form-control" value="(519) 504-1995" readonly/>
-    <div class="input-group-btn">
-      <button class="btn btn-secondary">
-        <%="\u260E" %>
-      </button>
+      <br>
+      <div class="input-group">
+        <input type="text" class="form-control" value="Deepak's Github" readonly/>
+        <div class="input-group-btn">
+          <a href="https://github.com/dbzguy56" target="_blank">
+            <button id="github-link" class="btn btn-secondary">
+              <%= image_tag('githubLogo') %>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <br>
+      <div class="input-group">
+        <input id="my-email" type="text" class="form-control" value="deepakbirdi25@gmail.com" readonly/>
+        <div class="input-group-btn">
+            <button class="btn btn-secondary" onclick="copyEmail()">
+              Copy email
+            </button>
+        </div>
+      </div>
+
+      <br>
+      <div class="input-group">
+        <input type="text" class="form-control" value="(519) 504-1995" readonly/>
+        <div class="input-group-btn">
+          <button class="btn btn-secondary">
+            <%="\u260E" %>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
