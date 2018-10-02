@@ -2,7 +2,7 @@
 <%= javascript_include_tag params[:controller] %>
 <%= render partial: 'mini_reddit_header' %>
 
-<div class="col-md-10 col-md-offset-1  " onload="centerPage()">
+<div class="col-10 offset-1 " onload="centerPage()">
   <% store_location %>
   <div class="post-comments post">
     <%= render partial: 'post_card', locals: {post: @post} %>
