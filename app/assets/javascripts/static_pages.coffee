@@ -8,6 +8,11 @@ collapsed = true
   copyEmail.select()
   document.execCommand("Copy")
 
+typeWriter = ->
+  if (i < textToBeTyped.length)
+    document.getElementById('intro-text').innerHTML += textToBeTyped.charAt(i)
+    i++
+    setTimeout(typeWriter, typingSpeed)
 
 ###
 #@addBgColor = ->
@@ -20,13 +25,6 @@ collapsed = true
     $('.navbar').removeClass 'header-bg-unclear'
   collapsed = !collapsed
 
-typeWriter = ->
-  if (i < textToBeTyped.length)
-    document.getElementById('intro-text').innerHTML += textToBeTyped.charAt(i)
-    i++
-    setTimeout(typeWriter, typingSpeed)
-
-
 headerTransparency =->
   if $(window).scrollTop() > 100
     $('.navbar').removeClass 'header-bg-clear'
@@ -37,7 +35,7 @@ headerTransparency =->
 ###
 
 $(document).ready ->
-  #typeWriter()
+  typeWriter()
 
 ###
   $('.navbar').addClass 'header-bg-clear'
