@@ -1,47 +1,61 @@
 <% provide(:title, "Mastermind") %>
 <%= javascript_include_tag params[:controller] %>
 <% store_location %>
-<div class="col-xs-2"></div>
-<div class="col-xs-8">
-  <div class="center jumbotron ">
-    <h1>Mastermind</h1>
-  </div>
+<div class="center jumbotron ">
+  <h1>Mastermind</h1>
+
+  <p class="center" style="color:red;">NOTE: This game is meant to be played on a PC desktop computer
+    and may not be compatible with tablets or mobile phones.</p>
+</div>
+
+<div class="container">
   <p id="how-to-play-text"   data-toggle="collapse" data-target="#instructions-text" onclick="handleInstructClick()">How to play [+]</p>
   <div id="instructions-text" class=" collapse">
     <%= render 'instructions' %>
   </div>
   <br>
-  <div id="leftPanel" class="col-xs-3">
-    <div id="colors" class="col-xs-9 align-self-center">
-      <% 3.times do %>
-        <%= render 'color_row' %>
-      <% end %>
-    </div>
-    <div class="col-xs-2"></div>
-    <div id="turn-buttons" class="col-xs-12">
-      <div id="turn-number"  >Turn: 1</div> </br>
-       <button class="mastermind-btn" id="checkButton" onclick="checkGuess()">Check row </button> </br>
-       <button class="mastermind-btn" onclick="newGame()">Start a new game </button> </br>
-    </div>
-    <div id="correct-colors" class="col-xs-12 " style="visibility: hidden;">
-      </br>
-      <span class="col-xs-12"> The secret code is:</span>
-      <%= render 'row'%>
-    </div>
-  </div>
-  <div id="board" class="col-xs-4 webd-font black-text" ondragover="allowDrop(event)" ondrop="return false;">
-    <% 12.times do |r| %>
-      <span id="turn-span" class="col-xs-1 "><%=r+1%></span>
-      <%= render 'row', r: r%>
-    <% end %>
-  </div>
-  <div class="col-xs-3">
-    <% 12.times do %>
-      <% 4.times do %>
-        <div class="guess-font guess-indicator">
+
+  <div class="row">
+    <div id="leftPanel" class="col-sm-12 col-md-3">
+      <div class="row">
+        <div id="colors" class="col-sm-6 col-md-6 align-self-center">
+          <% 3.times do %>
+            <%= render 'color_row' %>
+          <% end %>
         </div>
+
+
+        <div id="turn-buttons" class="col-sm-6 col-md-12">
+          <div id="turn-number"  >Turn: 1</div> </br>
+           <button class="mastermind-btn" id="checkButton" onclick="checkGuess()">Check row </button> </br>
+           <button class="mastermind-btn" onclick="newGame()">Start a new game </button> </br>
+        </div>
+
+        <div id="correct-colors" class="col-sm-6 col-md-12" style="visibility: hidden;">
+          </br>
+          <span class="col-xs-12"> The secret code is:</span>
+          <%= render 'row'%>
+        </div>
+      </div>
+    </div>
+
+    <div id="board" class="col-sm-12 col-md-4 webd-font black-text" ondragover="allowDrop(event)" ondrop="return false;">
+      <div class="row">
+        <% 12.times do |r| %>
+          <span id="turn-span" class="col-2"><%=r+1%></span>
+          <%= render 'row', r: r%>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-5">
+      <% 12.times do %>
+        <% 4.times do %>
+          <div class="guess-font guess-indicator">
+          </div>
+        <% end %>
+        <br>
       <% end %>
-      <br>
-    <% end %>
+    </div>
   </div>
 </div>

@@ -16,7 +16,7 @@ secretColorCode = []
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
 
-  console.log(secretColorCode)
+  #console.log(secretColorCode)
   secretColors = document.querySelectorAll('#correct-colors .piece')
 
   while turn >= 0
@@ -87,7 +87,7 @@ secretColorCode = []
 @drop = (ev) ->
   ev.preventDefault()
   ev.target.className = ev.dataTransfer.getData("text")
-  ev.target.className = ev.target.className.replace("col-xs-6", "col-xs-3")
+  ev.target.className = ev.target.className.replace("col-6", "col-xs-3")
   return
 
 @checkGuess = ->
@@ -201,7 +201,7 @@ $(document).ready ->
   secretColors[3].classList.add(secretColorCode[3])
 
   #secretColorCode = ["red", "yellow", "red", "green"]
-  console.log(secretColorCode)
+  #console.log(secretColorCode)
   piecesList = document.querySelectorAll('#board .piece')
   piecesList[0].setAttribute("ondrop", "drop(event)")
   piecesList[1].setAttribute("ondrop", "drop(event)")
