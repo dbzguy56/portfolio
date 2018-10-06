@@ -1,7 +1,10 @@
 <div class="row">
   <% 2.times do %>
-    <div class="piece big-font col-6" draggable="true" ondragstart="drag(event)">
-      &#9679;
+    <div class="piece colors-panel col-6" draggable="true" ondragstart="drag(event)">
+      <svg width="100" height="75">
+        <circle cx="35" cy="35" r="25" fill = ""/>
+      </svg>
+      <!--&#9679;-->
     </div>
   <% end %>
 </div>

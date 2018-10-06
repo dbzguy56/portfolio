@@ -2,6 +2,7 @@ colors = ["red", "green", "blue", "yellow", "magenta", "cyan"]
 turn = 0
 piecesList = undefined
 turnSpans = undefined
+secretColors = undefined
 secretColorCode = []
 
 @newGame = ->
@@ -10,14 +11,14 @@ secretColorCode = []
   turnSpans[0].style.color = "black"
   turnSpans[0].style.backgroundColor = "white"
   guessIndicatorSymbols = document.querySelectorAll('.guess-indicator')
-  i = 0
   secretColorCode = []
+  i = 0
   while i < 4 #new secret color code
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
 
   #console.log(secretColorCode)
-  secretColors = document.querySelectorAll('#correct-colors .piece')
+  #secretColors = document.querySelectorAll('#correct-colors .circle')
 
   while turn >= 0
     row = turn * 4
@@ -27,24 +28,10 @@ secretColorCode = []
     count = 0
 
     while count < 6 #check for each color in each piece in the row
-      if piecesList[row].classList.contains(colors[count])
-        piecesList[row].classList.remove(colors[count])
-      if piecesList[secondCol].classList.contains(colors[count])
-        piecesList[secondCol].classList.remove(colors[count])
-      if piecesList[thirdCol].classList.contains(colors[count])
-        piecesList[thirdCol].classList.remove(colors[count])
-      if piecesList[fourthCol].classList.contains(colors[count])
-        piecesList[fourthCol].classList.remove(colors[count])
-
-      if row == 0
-        if secretColors[row].classList.contains(colors[count])
-          secretColors[row].classList.remove(colors[count])
-        if secretColors[secondCol].classList.contains(colors[count])
-          secretColors[secondCol].classList.remove(colors[count])
-        if secretColors[thirdCol].classList.contains(colors[count])
-          secretColors[thirdCol].classList.remove(colors[count])
-        if secretColors[fourthCol].classList.contains(colors[count])
-          secretColors[fourthCol].classList.remove(colors[count])
+      piecesList[row].style.fill = ""
+      piecesList[secondCol].style.fill = ""
+      piecesList[thirdCol].style.fill = ""
+      piecesList[fourthCol].style.fill = ""
 
       if count < 4
         guessIndicatorSymbols[row + count].innerHTML = ""
@@ -66,42 +53,50 @@ secretColorCode = []
   piecesList[2].setAttribute("ondrop", "drop(event)")
   piecesList[3].setAttribute("ondrop", "drop(event)")
 
-  secretColors[0].classList.add(secretColorCode[0])
-  secretColors[1].classList.add(secretColorCode[1])
-  secretColors[2].classList.add(secretColorCode[2])
-  secretColors[3].classList.add(secretColorCode[3])
+  secretColors[0].style.fill = secretColorCode[0]
+  secretColors[1].style.fill = secretColorCode[1]
+  secretColors[2].style.fill = secretColorCode[2]
+  secretColors[3].style.fill = secretColorCode[3]
 
   turn = 0
   document.getElementById("turn-number").innerHTML = 'Turn: 1'
   document.getElementById('checkButton').style.visibility = 'visible'
   document.getElementById('correct-colors').style.visibility = 'hidden'
+  document.getElementById('colors').style.visibility = 'visible'
 
 @allowDrop = (ev) ->
   ev.preventDefault()
   return
 
 @drag = (ev) ->
-  ev.dataTransfer.setData("text", ev.target.className)
+  ev.dataTransfer.setData("color-fill", ev.target.style.fill)
   return
 
 @drop = (ev) ->
   ev.preventDefault()
-  ev.target.className = ev.dataTransfer.getData("text")
-  ev.target.className = ev.target.className.replace("col-6", "col-xs-3")
+  ev.target.style.fill = ev.dataTransfer.getData("color-fill")
+  #console.log(ev.dataTransfer.getData("color-fill"))
   return
 
 @checkGuess = ->
-  piecesList = document.querySelectorAll('#board .piece')
+  piecesList = document.querySelectorAll('#board .circle')
   row = turn * 4
   correctPositionGuesses = 0
   correctGuesses = 0
   secondCol = row + 1
   thirdCol = row + 2
   fourthCol = row + 3
-  if piecesList[row].classList.item(3) != null && piecesList[secondCol].classList.item(3) != null &&
-  piecesList[thirdCol].classList.item(3) != null && piecesList[fourthCol].classList.item(3) != null
+
+  ###
+  console.log(piecesList[row])
+  console.log(piecesList[secondCol])
+  console.log(piecesList[thirdCol])
+  console.log(piecesList[fourthCol])
+  ###
+  if piecesList[row].style.fill != "" && piecesList[secondCol].style.fill != "" &&
+  piecesList[thirdCol].style.fill != "" && piecesList[fourthCol].style.fill != ""
     i = 0
-    piecesColorsLeft = [piecesList[row].classList.item(3),piecesList[secondCol].classList.item(3),piecesList[thirdCol].classList.item(3),piecesList[fourthCol].classList.item(3)]
+    piecesColorsLeft = [piecesList[row].style.fill,piecesList[secondCol].style.fill,piecesList[thirdCol].style.fill,piecesList[fourthCol].style.fill]
     while i < 4
       j = 0
       while j < 4
@@ -168,10 +163,12 @@ secretColorCode = []
       piecesList[row + 3].setAttribute("ondrop", "drop(event)")
       if winner
         document.getElementById('checkButton').style.visibility = 'hidden'
+        document.getElementById('colors').style.visibility = 'hidden'
         document.getElementById("turn-number").innerHTML = 'You win!'
       else
         document.getElementById("turn-number").innerHTML = 'Turn: ' + (turn + 1)
     else
+      document.getElementById('colors').style.visibility = 'hidden'
       document.getElementById('checkButton').style.visibility = 'hidden'
       document.getElementById("turn-number").innerHTML = 'You lose!'
       document.getElementById('correct-colors').style.visibility = 'visible'
@@ -182,8 +179,10 @@ secretColorCode = []
   text = document.getElementById('how-to-play-text').innerHTML
   if text[text.length-2] == '+'
     document.getElementById('how-to-play-text').innerHTML = "How to play [-]"
+    document.getElementById('scroll-panel').style.position = 'static'
   else
     document.getElementById('how-to-play-text').innerHTML = "How to play [+]"
+    document.getElementById('scroll-panel').style.position = 'fixed'
 
 $(document).ready ->
   turnSpans = document.querySelectorAll('#turn-span')
@@ -194,14 +193,16 @@ $(document).ready ->
     secretColorCode.push colors[Math.floor(Math.random() * 6)]
     i++
 
-  secretColors = document.querySelectorAll('#correct-colors .piece')
-  secretColors[0].classList.add(secretColorCode[0])
-  secretColors[1].classList.add(secretColorCode[1])
-  secretColors[2].classList.add(secretColorCode[2])
-  secretColors[3].classList.add(secretColorCode[3])
-
   #secretColorCode = ["red", "yellow", "red", "green"]
   #console.log(secretColorCode)
+
+  secretColors = document.querySelectorAll('#correct-colors .circle')
+
+  secretColors[0].style.fill = secretColorCode[0]
+  secretColors[1].style.fill = secretColorCode[1]
+  secretColors[2].style.fill = secretColorCode[2]
+  secretColors[3].style.fill = secretColorCode[3]
+
   piecesList = document.querySelectorAll('#board .piece')
   piecesList[0].setAttribute("ondrop", "drop(event)")
   piecesList[1].setAttribute("ondrop", "drop(event)")
@@ -231,16 +232,25 @@ $(document).ready ->
     j++
 
 
+  ###
   allPieces.forEach (piece) ->
     piece.style.height = String(boardStyle.offsetHeight/12).concat('px')
     return
 
   colorsDiv.style.width = String(boardStyle.offsetWidth/3).concat('px')
   colorsDiv.style.height = String(boardStyle.offsetHeight/4).concat('px')
+  ###
 
-  colorPieces[0].classList.add('red')
-  colorPieces[1].classList.add('green')
-  colorPieces[2].classList.add('blue')
-  colorPieces[3].classList.add('yellow')
-  colorPieces[4].classList.add('magenta')
-  colorPieces[5].classList.add('cyan')
+  colorPieces[0].style.fill = 'red'
+  colorPieces[1].style.fill = 'green'
+  colorPieces[2].style.fill = 'blue'
+  colorPieces[3].style.fill = 'yellow'
+  colorPieces[4].style.fill = 'magenta'
+  colorPieces[5].style.fill = 'cyan'
+
+$(document).ready ->
+  $(window).on 'scroll', ->
+    if window.scrollY > 300
+      document.getElementById('scroll-panel').style.marginTop = "600px"
+    else
+      document.getElementById('scroll-panel').style.marginTop = "0"

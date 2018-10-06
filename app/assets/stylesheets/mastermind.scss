@@ -2,7 +2,7 @@
   width: 450px;
   height: 800px;
   margin: auto;
-  margin-bottom: 100px;
+  margin-top: 0;
   .row {
     margin: 0;
   }
@@ -21,7 +21,7 @@
     background-color: #bf8040;
     border-radius: 20px;
     padding-left: 0px;
-    width: 150px;
+    width: 275px;
   }
 }
 
@@ -33,6 +33,7 @@
 #turn-span {
   margin-top: 30px;
   border-radius: 20px 0 0 20px;
+  height: 20px;
 }
 
 #turn-number {
@@ -47,6 +48,13 @@
     color: #9d9d9d;
   }
 }
+.col-background {
+  padding: 0;
+}
+
+.colors-panel {
+  height: 75px;
+}
 
 #leftPanel {
   .piece {
@@ -54,9 +62,18 @@
   }
 }
 
+#guess-panel {
+  margin-top: 20px;
+}
+
 #instructions-text {
   padding-left: 15px;
   font-size: 16px;
+}
+
+#scroll-panel {
+  //position: fixed; //have scrolling later?
+  width: 300px;
 }
 
 .big-font {
@@ -66,13 +83,12 @@
 
 .guess-font {
   font-size: 40px;
-  line-height: 1.673;
+  height: 100px;
 }
 
 .piece, .example {
   background-color: #BF8040;
   text-align: center;
-  line-height: 60px;
 }
 
 .guess-indicator {
