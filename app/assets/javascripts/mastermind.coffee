@@ -179,10 +179,10 @@ secretColorCode = []
   text = document.getElementById('how-to-play-text').innerHTML
   if text[text.length-2] == '+'
     document.getElementById('how-to-play-text').innerHTML = "How to play [-]"
-    document.getElementById('scroll-panel').style.position = 'static'
+    #document.getElementById('scroll-panel').style.position = 'static'
   else
     document.getElementById('how-to-play-text').innerHTML = "How to play [+]"
-    document.getElementById('scroll-panel').style.position = 'fixed'
+    #document.getElementById('scroll-panel').style.position = 'fixed'
 
 $(document).ready ->
   turnSpans = document.querySelectorAll('#turn-span')
@@ -250,7 +250,13 @@ $(document).ready ->
 
 $(document).ready ->
   $(window).on 'scroll', ->
-    if window.scrollY > 300
-      document.getElementById('scroll-panel').style.marginTop = "600px"
+    scrollPanel = document.getElementById('scroll-panel')
+    scrollValue = 300
+
+    if document.getElementById('instructions-text').classList.contains('show')
+      scrollValue = 1200
+
+    if window.scrollY > scrollValue
+      scrollPanel.style.marginTop = "600px"
     else
-      document.getElementById('scroll-panel').style.marginTop = "0"
+      scrollPanel.style.marginTop = "0"
