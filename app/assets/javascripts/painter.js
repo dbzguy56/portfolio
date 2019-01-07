@@ -74,19 +74,44 @@ function createProgram(gl, vertexShader, fragmentShader) {
   return undefined;
 }
 
-var mouseDown = false;
-var mouseX = 300;
-var mouseY = 240;
+var mouseX;
+var mouseY;
+var initMouseX = 0;
+var initYawAngle = 0;
+var rightMouseDown = false;
+var targetPosX = 300;
+var targetPosY = 240;
+var cameraX = 0;
+var cameraZ = 0;
+var yawAngle = 0;
 
-function handleMouseDown(e) {
+function handleMouseMove(e) {
   var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
-  mouseDown = true;
-  mouseX = e.clientX - canvasRect.left;
+  mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
   mouseY = e.clientY - canvasRect.top;
 }
 
+function handleMouseDown(e) {
+
+  if (e.which == 1) {
+    targetPosX = mouseX;
+    targetPosY = mouseY;
+  }
+  else if (e.which == 3) {
+    rightMouseDown = true;
+    initMouseX = mouseX;
+  }
+}
+
 function handleMouseUp(e) {
-  mouseDown = false;
+  if (e.which == 3) {
+    rightMouseDown = false;
+    initYawAngle = yawAngle;
+  }
+}
+
+function handleMouseOut(e) {
+  rightMouseDown = false;
 }
 
 function runPainter() { // Main game function
@@ -94,8 +119,11 @@ function runPainter() { // Main game function
   var canvas = document.getElementById("painter-canvas");
   var gl = canvas.getContext("webgl2");
 
-  canvas.addEventListener("mousedown", handleMouseDown, false);
-  canvas.addEventListener("mouseup", handleMouseUp, false);
+  canvas.addEventListener("mousedown", handleMouseDown);
+  canvas.addEventListener("mouseup", handleMouseUp);
+  canvas.addEventListener("mousemove", handleMouseMove)
+  canvas.addEventListener("mouseout", handleMouseOut)
+  canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
   if (!gl) {
     return;
@@ -117,6 +145,7 @@ function runPainter() { // Main game function
   var circleOrigin = 0.0;
   var circleRadius = 0.5;
   var circleAngle = (2 * Math.PI) / circleEdges;
+  /*
   var circleVertices = [circleOrigin, circleOrigin, 0];
   var circleIndices = [];
 
@@ -142,6 +171,16 @@ function runPainter() { // Main game function
     }
   }
 
+  circleVertices.push(0, 0, 1);
+  console.log(circleVertices);
+  circleIndices.push(1, circleEdges/2, circleEdges);
+  console.log(circleIndices);
+  */
+
+  var circleVertices = [0.5,  0.5, 0.0,     0.5, -0.5, 0.0,   -0.5, -0.5, 0.0,   -0.5,  0.5, 0.0,     0.0, 0.0, 0.5];
+  var circleIndices = [ 0, 1, 3,    1, 2, 3,    0, 4, 2];
+
+
   const circleVAO = gl.createVertexArray();
   const circleVBO = gl.createBuffer();
   const circleEBO = gl.createBuffer();
@@ -166,8 +205,11 @@ function runPainter() { // Main game function
   gl.enableVertexAttribArray(positionAttributeLocation);
 
   // unbind
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
   gl.bindVertexArray(null);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  var lastAngle = 0;
 
   requestAnimationFrame(drawScene);
 
@@ -191,51 +233,45 @@ function runPainter() { // Main game function
     right = bottom * aspect;
     left = -right;
 
-    /*
-    var zMultiplier = 10;
-    var mouseXTranslation = zMultiplier * ((mouseX/gl.canvas.width)-0.5);
-    var mouseYTranslation = zMultiplier * ((mouseY/gl.canvas.height)-0.5);
-    */
 
-    var x = (2.0 * mouseX)/gl.canvas.width - 1.0;
-    var y = 1.0 - (2.0 * mouseY)/gl.canvas.height;
-    var rayNds = new THREE.Vector3(x, y, 1.0);
+    var NDCx = (2.0 * targetPosX)/gl.canvas.width - 1.0;
+    var NDCy = 1.0 - (2.0 * targetPosY)/gl.canvas.height;
+    var rayNds = new THREE.Vector3(NDCx, NDCy, 1.0);
     var rayClip = new THREE.Vector4(rayNds.x, rayNds.y, -1.0, 1.0);
-    console.log(rayNds);
-    console.log("ray clip " + rayClip);
 
     var viewMatrix = new THREE.Matrix4();
     var projectionMatrix = new THREE.Matrix4();
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
-
-    var inverseProjectionMatrix = new THREE.Matrix4(); //this all seems unnecessary?
-    var rayEye = new THREE.Vector4();
-    rayEye = rayEye.copy(rayClip.applyMatrix4(inverseProjectionMatrix.getInverse(projectionMatrix)));
-    rayEye.z = -1.0;
-    rayEye.w = 0.0;
-    console.log(rayEye);
-
-    viewMatrix.makeTranslation(0, 0, -3);
-
-    var inverseViewMatrix = new THREE.Matrix4();
-    var multiplyVector = new THREE.Vector4();
-    multiplyVector = multiplyVector.copy(rayEye.applyMatrix4(inverseViewMatrix.getInverse(viewMatrix)));
-    console.log(multiplyVector);
-    var rayWor = new THREE.Vector3(multiplyVector.x, multiplyVector.y, multiplyVector.z);
-    console.log(rayWor);
-    rayWor = rayWor.normalize();
+    //viewMatrix.makeTranslation(0, 0, -3);
 
 
+    if(rightMouseDown) {
+      yawAngle = ((2 * Math.PI * (mouseX - initMouseX)) / 360) + initYawAngle
+
+      cameraX = Math.sin(yawAngle);
+      cameraZ = Math.cos(yawAngle);
+    }
+
+    viewMatrix.lookAt(new THREE.Vector3(cameraX, 0.0, cameraZ), new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(0.0, 1.0, 0.0))
+    //console.log(viewMatrix);
 
     gl.uniformMatrix4fv(viewUniLoc, false, viewMatrix.elements);
     gl.uniformMatrix4fv(projectionUniLoc, false, projectionMatrix.elements);
 
+    rayClip.applyMatrix4(projectionMatrix.getInverse(projectionMatrix));
+    rayClip.z = -1.0;
+    rayClip.w = 0.0;
+
+    rayClip.applyMatrix4(viewMatrix.getInverse(viewMatrix));
+    var rayWor = new THREE.Vector3(rayClip.x, rayClip.y, rayClip.z);
+    rayWor.normalize();
+
     var modelMatrix = new THREE.Matrix4();
-    //rayWor = rayWor * 3;
-    var cameraPos = new THREE.Vector3(0, 0, 3);
-    var position = rayWor.sub(cameraPos);
-    position = (position.normalize()) * 3;
-    modelMatrix.makeTranslation(rayWor.x, rayWor.y, 0);
+    //var rayPos = new THREE.Vector3(0, 0, 3);
+    var rayPos = new THREE.Vector3(0, 0, 0); //ray's position
+    var position = rayPos.add(rayWor.multiplyScalar(3));
+    modelMatrix.makeTranslation(position.x, position.y, position.z);
+    //modelMatrix.makeTranslation(0, 0, 0);
     gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
 
 
