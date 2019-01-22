@@ -69,6 +69,8 @@ var pitchAngle = 0;
 var initYawAngle = 0;
 var initPitchAngle = 0;
 
+var cameraDistance = 3;
+
 function handleMouseMove(e) {
   var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
   mouseX = e.clientX;// - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
@@ -100,6 +102,29 @@ function handleMouseOut(e) {
   rightMouseDown = false;
 }
 
+function handleMouseWheel(e) {
+  e.preventDefault();
+  const ZOOMFACTOR = 1;
+  const CAMERAZOOMMIN = 1;
+  const CAMERAZOOMMAX = 50;
+
+  if (e.deltaY > 0) {
+    cameraDistance += ZOOMFACTOR;
+  }
+  else {
+    cameraDistance -= ZOOMFACTOR;
+  }
+
+  if (cameraDistance > CAMERAZOOMMAX) {
+    cameraDistance = CAMERAZOOMMAX;
+  }
+  else if (cameraDistance < CAMERAZOOMMIN) {
+    cameraDistance = CAMERAZOOMMIN;
+  }
+
+  console.log("zoom: " + cameraDistance);
+}
+
 function runPainter() { // Main game function
   // Get a WeblGL context
   var canvas = document.getElementById("painter-canvas");
@@ -107,8 +132,9 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("mousedown", handleMouseDown);
   canvas.addEventListener("mouseup", handleMouseUp);
-  canvas.addEventListener("mousemove", handleMouseMove)
-  canvas.addEventListener("mouseout", handleMouseOut)
+  canvas.addEventListener("mousemove", handleMouseMove);
+  canvas.addEventListener("mouseout", handleMouseOut);
+  canvas.addEventListener("wheel", handleMouseWheel);
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
   if (!gl) {
@@ -248,8 +274,7 @@ function runPainter() { // Main game function
     cameraPos.x = -Math.cos(pitchAngle) * Math.sin(yawAngle);
     cameraPos.z = Math.cos(pitchAngle) * Math.cos(yawAngle);
 
-    var distance = 3;
-    cameraPos.normalize().multiplyScalar(distance);
+    cameraPos.normalize().multiplyScalar(cameraDistance);
 
     var screenCenterPos = new THREE.Vector3(0, 0, 0);
 
@@ -259,16 +284,8 @@ function runPainter() { // Main game function
 
     viewMatrix.makeBasis(cameraRight, cameraUp, cameraForward);
     viewMatrix = viewMatrix.premultiply(new THREE.Matrix4().makeTranslation(cameraPos.x, cameraPos.y, cameraPos.z));
+    // have to pre-multiply because 3js makes an identity matrix with the translation instead of applying to existing
     viewMatrix.getInverse(viewMatrix);
-
-    /*
-    var distance = 3;
-    var cameraPosVector = new THREE.Vector3(cameraX, cameraY, cameraZ);
-    cameraPosVector.normalize().multiplyScalar(distance);
-    viewMatrix.lookAt(cameraPosVector, new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(0.0, 1.0, 0.0))
-    viewMatrix.getInverse(viewMatrix);
-    console.log(viewMatrix);
-    */
 
     gl.uniformMatrix4fv(viewUniLoc, false, viewMatrix.elements);
     gl.uniformMatrix4fv(projectionUniLoc, false, projectionMatrix.elements);
