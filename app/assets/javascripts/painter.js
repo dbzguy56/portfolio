@@ -70,18 +70,20 @@ var initYawAngle = 0;
 var initPitchAngle = 0;
 
 var cameraDistance = 3;
+var mouseClick = false;
 
 function handleMouseMove(e) {
   var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
-  mouseX = e.clientX;// - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
-  mouseY = e.clientY;// - canvasRect.top;
+  mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
+  mouseY = e.clientY - canvasRect.top;
 }
 
 function handleMouseDown(e) {
-
+  e.preventDefault();
   if (e.which == 1) {
     targetPosX = mouseX;
     targetPosY = mouseY;
+    mouseClick = true;
   }
   else if (e.which == 3) {
     rightMouseDown = true;
@@ -222,6 +224,7 @@ function runPainter() { // Main game function
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   var cameraPos = new THREE.Vector3();
+  var position = new THREE.Vector3();
 
   requestAnimationFrame(drawScene);
 
@@ -247,12 +250,12 @@ function runPainter() { // Main game function
     var NDCx = (2.0 * targetPosX)/gl.canvas.width - 1.0;
     var NDCy = 1.0 - (2.0 * targetPosY)/gl.canvas.height;
     var rayNds = new THREE.Vector3(NDCx, NDCy, 1.0);
-    var rayClip = new THREE.Vector4(rayNds.x, rayNds.y, -1.0, 1.0);
+    var rayClip = new THREE.Vector4(rayNds.x, rayNds.y, -1.0, 1.0); //direction vector pointing into screen
 
-    var viewMatrix = new THREE.Matrix4();
+    var cameraMatrix = new THREE.Matrix4();
     var projectionMatrix = new THREE.Matrix4();
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
-    //viewMatrix.makeTranslation(0, 0, -3);
+    //cameraMatrix.makeTranslation(0, 0, -3);
 
 
     if(rightMouseDown) {
@@ -282,32 +285,39 @@ function runPainter() { // Main game function
     var cameraRight = new THREE.Vector3().crossVectors(new THREE.Vector3(0.0, 1.0, 0.0), cameraForward).normalize();
     var cameraUp = new THREE.Vector3().crossVectors(cameraForward, cameraRight).normalize();
 
-    viewMatrix.makeBasis(cameraRight, cameraUp, cameraForward);
-    viewMatrix = viewMatrix.premultiply(new THREE.Matrix4().makeTranslation(cameraPos.x, cameraPos.y, cameraPos.z));
+    cameraMatrix.makeBasis(cameraRight, cameraUp, cameraForward);
+    cameraMatrix = cameraMatrix.premultiply(new THREE.Matrix4().makeTranslation(cameraPos.x, cameraPos.y, cameraPos.z));
     // have to pre-multiply because 3js makes an identity matrix with the translation instead of applying to existing
-    viewMatrix.getInverse(viewMatrix);
+    var viewMatrix = new THREE.Matrix4().getInverse(cameraMatrix);
 
     gl.uniformMatrix4fv(viewUniLoc, false, viewMatrix.elements);
     gl.uniformMatrix4fv(projectionUniLoc, false, projectionMatrix.elements);
 
-    /*
+
     rayClip.applyMatrix4(projectionMatrix.getInverse(projectionMatrix));
     rayClip.z = -1.0;
     rayClip.w = 0.0;
 
-    rayClip.applyMatrix4(viewMatrix.getInverse(viewMatrix));
+    rayClip.applyMatrix4(cameraMatrix);
     var rayWor = new THREE.Vector3(rayClip.x, rayClip.y, rayClip.z);
     rayWor.normalize();
-    */
+
 
     var modelMatrix = new THREE.Matrix4();
-    /*
-    var rayPos = new THREE.Vector3(0, 0, 3);
-    var rayPos = new THREE.Vector3(0, 0, 0); //ray's position
-    var position = rayPos.add(rayWor.multiplyScalar(3));
+
+    //modelMatrix.makeTranslation(3, 2, 0);
+
+    if (mouseClick) {
+      var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
+      position = rayPos.add(rayWor.multiplyScalar(cameraDistance));
+      mouseClick = false;
+    }
+
     modelMatrix.makeTranslation(position.x, position.y, position.z);
-    modelMatrix.makeTranslation(0, 0, 0);
-    */
+
+    //console.log(modelMatrix);
+
+
     gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
 
     gl.bindVertexArray(circleVAO);
