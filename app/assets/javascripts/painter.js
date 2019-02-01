@@ -15,9 +15,11 @@ var fragmentShaderSource = `#version 300 es
 
   out vec4 outColor;
 
+  uniform vec4 ourColor;
+
   void main() {
 
-  	outColor = vec4(1, 0, 0.5, 1);
+  	outColor = ourColor;
   }
 `;
 
@@ -143,6 +145,8 @@ function runPainter() { // Main game function
     return;
   }
 
+  gl.enable(gl.DEPTH_TEST);
+
   var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
@@ -154,6 +158,7 @@ function runPainter() { // Main game function
   var modelUniLoc = gl.getUniformLocation(program, "model");
   var viewUniLoc = gl.getUniformLocation(program, "view");
   var projectionUniLoc = gl.getUniformLocation(program, "projection");
+  var vertexColorUniLoc = gl.getUniformLocation(program, "ourColor");
 
   var circleEdges = 30;
   var circleOrigin = 0.0;
@@ -192,8 +197,7 @@ function runPainter() { // Main game function
   */
 
   var circleVertices = [0.5,  0.5, 0.0,     0.5, -0.5, 0.0,   -0.5, -0.5, 0.0,   -0.5,  0.5, 0.0,     0.0, 0.0, 0.5];
-  var circleIndices = [ 0, 1, 3,    1, 2, 3,    0, 4, 2];
-
+  var circleIndices = [0, 1, 3,    1, 2, 3,    0, 4, 2];
 
   const circleVAO = gl.createVertexArray();
   const circleVBO = gl.createBuffer();
@@ -219,9 +223,28 @@ function runPainter() { // Main game function
   gl.enableVertexAttribArray(positionAttributeLocation);
 
   // unbind
+  gl.bindVertexArray(null);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+  var gridLineVertices = [0.5, 0.0, 0.0,  -0.5, 0.0, 0.0];
+
+  const gridLineVAO = gl.createVertexArray();
+  const gridLineVBO = gl.createBuffer();
+
+  gl.bindVertexArray(gridLineVAO);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, gridLineVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridLineVertices), gl.STATIC_DRAW);
+
+  gl.vertexAttribPointer(positionAttributeLocation, numComponents, type, normalize,
+    stride, offset);
+
+  gl.enableVertexAttribArray(positionAttributeLocation);
 
   gl.bindVertexArray(null);
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
 
   var cameraPos = new THREE.Vector3();
   var position = new THREE.Vector3();
@@ -232,7 +255,7 @@ function runPainter() { // Main game function
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     gl.clearColor(255, 255, 255, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(program);
 
@@ -255,8 +278,6 @@ function runPainter() { // Main game function
     var cameraMatrix = new THREE.Matrix4();
     var projectionMatrix = new THREE.Matrix4();
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
-    //cameraMatrix.makeTranslation(0, 0, -3);
-
 
     if(rightMouseDown) {
       var degToRad = (2 * Math.PI) / 360;
@@ -302,10 +323,7 @@ function runPainter() { // Main game function
     var rayWor = new THREE.Vector3(rayClip.x, rayClip.y, rayClip.z);
     rayWor.normalize();
 
-
     var modelMatrix = new THREE.Matrix4();
-
-    //modelMatrix.makeTranslation(3, 2, 0);
 
     if (mouseClick) {
       var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
@@ -314,19 +332,45 @@ function runPainter() { // Main game function
     }
 
     modelMatrix.makeTranslation(position.x, position.y, position.z);
-
-    //console.log(modelMatrix);
-
-
     gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
+
+    var brushColor = new THREE.Vector4(1.0, 0.0, 0.5, 1.0);
+    gl.uniform4f(vertexColorUniLoc, brushColor.x, brushColor.y, brushColor.z, brushColor.w);
 
     gl.bindVertexArray(circleVAO);
 
-    const primitiveType = gl.TRIANGLES;
-    const vertexCount = circleIndices.length;
+    var primitiveType = gl.TRIANGLES;
+    var vertexCount = circleIndices.length;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(primitiveType, vertexCount, type, offset);
+    gl.bindVertexArray(null);
+
+
+    modelMatrix = new THREE.Matrix4().makeScale(3, 3, 3);
+    gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
+
+    var gridLineColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
+    gl.uniform4f(vertexColorUniLoc, gridLineColor.x, gridLineColor.y, gridLineColor.z, gridLineColor.w);
+
+    gl.bindVertexArray(gridLineVAO);
+
+    primitiveType = gl.LINE_STRIP;
+    vertexCount = 2;
+    gl.drawArrays(primitiveType, 0, vertexCount);
+    gl.bindVertexArray(null);
+
+
+    modelMatrix.makeScale(3, 3, 3);
+    modelMatrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
+    gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
+
+    gl.bindVertexArray(gridLineVAO);
+
+    primitiveType = gl.LINE_STRIP;
+    vertexCount = 2;
+    gl.drawArrays(primitiveType, 0, vertexCount);
+    gl.bindVertexArray(null);
 
     requestAnimationFrame(drawScene);
   }
