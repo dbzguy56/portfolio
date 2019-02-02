@@ -57,8 +57,8 @@ function createProgram(gl, vertexShader, fragmentShader) {
   return undefined;
 }
 
-var mouseX;
-var mouseY;
+var mouseX = 0;
+var mouseY = 0;
 var initMouseX = 0;
 var initMouseY = 0;
 var rightMouseDown = false;
@@ -68,12 +68,12 @@ var targetPosY = 240;
 
 var degToRad = (2 * Math.PI) / 360;
 
-var yawAngle = 0;
-var pitchAngle = 0;
-var initYawAngle = 0;
-var initPitchAngle = 0;
+var yawAngle = 45 * degToRad;
+var pitchAngle = 45 * degToRad;
+var initYawAngle = yawAngle;
+var initPitchAngle = pitchAngle;
 
-var cameraDistance = 3;
+var cameraDistance = 5;
 var mouseClick = false;
 
 function handleMouseMove(e) {
@@ -282,9 +282,9 @@ function runPainter() { // Main game function
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
 
     if(rightMouseDown) {
+      console.log("mouseX :" + mouseX + ", initMouseX: " + initMouseX + ", initYawAngle: " + initYawAngle);
       yawAngle = (degToRad * (mouseX - initMouseX)) + initYawAngle
       pitchAngle = (degToRad * (mouseY - initMouseY)) + initPitchAngle
-
 
       var pitchAngleLimit = 89.9 * degToRad;
       if (pitchAngle > pitchAngleLimit) {
