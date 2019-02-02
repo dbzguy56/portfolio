@@ -66,6 +66,8 @@ var rightMouseDown = false;
 var targetPosX = 300;
 var targetPosY = 240;
 
+var degToRad = (2 * Math.PI) / 360;
+
 var yawAngle = 0;
 var pitchAngle = 0;
 var initYawAngle = 0;
@@ -227,7 +229,7 @@ function runPainter() { // Main game function
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 
-  var gridLineVertices = [0.5, 0.0, 0.0,  -0.5, 0.0, 0.0];
+  var gridLineVertices = [1.0, 0.0, 0.0,  0.0, 0.0, 0.0];
 
   const gridLineVAO = gl.createVertexArray();
   const gridLineVBO = gl.createBuffer();
@@ -254,7 +256,7 @@ function runPainter() { // Main game function
   function drawScene() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.clearColor(255, 255, 255, 0);
+    gl.clearColor(0.18, 0.22, 0.25, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(program);
@@ -280,7 +282,6 @@ function runPainter() { // Main game function
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
 
     if(rightMouseDown) {
-      var degToRad = (2 * Math.PI) / 360;
       yawAngle = (degToRad * (mouseX - initMouseX)) + initYawAngle
       pitchAngle = (degToRad * (mouseY - initMouseY)) + initPitchAngle
 
@@ -346,31 +347,46 @@ function runPainter() { // Main game function
     gl.drawElements(primitiveType, vertexCount, type, offset);
     gl.bindVertexArray(null);
 
+    var gridScale = 5;
+    var gridDivisions = 10;
 
-    modelMatrix = new THREE.Matrix4().makeScale(3, 3, 3);
-    gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
+    var gridLineColor = new THREE.Vector4(0.6, 0.6, 0.6, 1.0);
+    var gridAxisColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
 
-    var gridLineColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
-    gl.uniform4f(vertexColorUniLoc, gridLineColor.x, gridLineColor.y, gridLineColor.z, gridLineColor.w);
+    var i, j;
+    var xTranslation, zTranslation;
+    for (i = 0; i < (gridDivisions + 1); i++) {
+      for (j = 0; j < 2; j++) {
+        modelMatrix.makeScale(gridScale, gridScale, gridScale);
+        if (j == 0) {
+          xTranslation = (i / gridDivisions) * gridScale;
+          zTranslation = 0;
+          modelMatrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
+        }
+        else {
+          zTranslation = (i / gridDivisions) * gridScale;
+          xTranslation = 0;
+        }
 
-    gl.bindVertexArray(gridLineVAO);
+        if (i == ((Math.floor(gridDivisions / 2)))) {
+          gl.uniform4f(vertexColorUniLoc, gridAxisColor.x, gridAxisColor.y, gridAxisColor.z, gridAxisColor.w);
+        }
+        else {
+          gl.uniform4f(vertexColorUniLoc, gridLineColor.x, gridLineColor.y, gridLineColor.z, gridLineColor.w);
+        }
 
-    primitiveType = gl.LINE_STRIP;
-    vertexCount = 2;
-    gl.drawArrays(primitiveType, 0, vertexCount);
-    gl.bindVertexArray(null);
+        modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(xTranslation, 0, -zTranslation));
+        modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(-(gridScale / 2), 0, (gridScale / 2)));
+        gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
 
+        gl.bindVertexArray(gridLineVAO);
 
-    modelMatrix.makeScale(3, 3, 3);
-    modelMatrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
-    gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
-
-    gl.bindVertexArray(gridLineVAO);
-
-    primitiveType = gl.LINE_STRIP;
-    vertexCount = 2;
-    gl.drawArrays(primitiveType, 0, vertexCount);
-    gl.bindVertexArray(null);
+        primitiveType = gl.LINE_STRIP;
+        vertexCount = 2;
+        gl.drawArrays(primitiveType, 0, vertexCount);
+        gl.bindVertexArray(null);
+      }
+    }
 
     requestAnimationFrame(drawScene);
   }
