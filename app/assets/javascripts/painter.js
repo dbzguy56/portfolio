@@ -10,6 +10,23 @@ var vertexShaderSource = `#version 300 es
   }
 `;
 
+var billboardVertexShaderSource = `#version 300 es
+  in vec3 vertexPosition_worldspace;
+
+  uniform vec3 cameraRight_worldspace;
+  uniform vec3 cameraUp_worldspace;
+  uniform mat4 model;
+  uniform mat4 view;
+  uniform mat4 projection;
+
+  void main() {
+    vec3 vertex = (model * vec4(vertexPosition_worldspace, 1.0f)).xyz;
+    vertex = cameraRight_worldspace * vertex.x
+      + cameraUp_worldspace * vertex.z;
+    gl_Position = projection * view * vec4(vertex, 1.0f);
+  }
+`;
+
 var fragmentShaderSource = `#version 300 es
   precision mediump float;
 
@@ -57,90 +74,92 @@ function createProgram(gl, vertexShader, fragmentShader) {
   return undefined;
 }
 
-var mouseX = 0;
-var mouseY = 0;
-var initMouseX = 0;
-var initMouseY = 0;
-var rightMouseDown = false;
-
-var targetPosX = 300;
-var targetPosY = 240;
-
-var degToRad = (2 * Math.PI) / 360;
-
-var yawAngle = 45 * degToRad;
-var pitchAngle = 45 * degToRad;
-var initYawAngle = yawAngle;
-var initPitchAngle = pitchAngle;
-
-var cameraDistance = 5;
-var mouseClick = false;
-
-function handleMouseMove(e) {
-  var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
-  mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
-  mouseY = e.clientY - canvasRect.top;
-}
-
-function handleMouseDown(e) {
-  e.preventDefault();
-  if (e.which == 1) {
-    targetPosX = mouseX;
-    targetPosY = mouseY;
-    mouseClick = true;
-  }
-  else if (e.which == 3) {
-    rightMouseDown = true;
-    initMouseX = mouseX;
-    initMouseY = mouseY;
-  }
-}
-
-function handleMouseUp(e) {
-  if (e.which == 3) {
-    rightMouseDown = false;
-    initYawAngle = yawAngle;
-    initPitchAngle = pitchAngle;
-  }
-}
-
-function handleMouseOut(e) {
-  rightMouseDown = false;
-}
-
-function handleMouseWheel(e) {
-  e.preventDefault();
-  const ZOOMFACTOR = 1;
-  const CAMERAZOOMMIN = 1;
-  const CAMERAZOOMMAX = 50;
-
-  if (e.deltaY > 0) {
-    cameraDistance += ZOOMFACTOR;
-  }
-  else {
-    cameraDistance -= ZOOMFACTOR;
-  }
-
-  if (cameraDistance > CAMERAZOOMMAX) {
-    cameraDistance = CAMERAZOOMMAX;
-  }
-  else if (cameraDistance < CAMERAZOOMMIN) {
-    cameraDistance = CAMERAZOOMMIN;
-  }
-
-  console.log("zoom: " + cameraDistance);
-}
-
 function runPainter() { // Main game function
   // Get a WeblGL context
   var canvas = document.getElementById("painter-canvas");
   var gl = canvas.getContext("webgl2");
 
-  canvas.addEventListener("mousedown", handleMouseDown);
-  canvas.addEventListener("mouseup", handleMouseUp);
-  canvas.addEventListener("mousemove", handleMouseMove);
-  canvas.addEventListener("mouseout", handleMouseOut);
-  canvas.addEventListener("wheel", handleMouseWheel);
+  const ZOOMFACTOR = 1;
+  const CAMERAZOOMMIN = 1;
+  const CAMERAZOOMMAX = 50;
+
+  var mouseX = 0;
+  var mouseY = 0;
+  var initMouseX = 0;
+  var initMouseY = 0;
+  var rightMouseDown = false;
+
+  var targetPosX = 300;
+  var targetPosY = 240;
+
+  var degToRad = (2 * Math.PI) / 360;
+
+  var yawAngle = 45 * degToRad;
+  var pitchAngle = 45 * degToRad;
+  var initYawAngle = yawAngle;
+  var initPitchAngle = pitchAngle;
+
+  var cameraDistance = 5;
+  var mouseClick = false;
+
+  var keyDown = false;
+
+  canvas.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    if (e.which == 1) {
+      targetPosX = mouseX;
+      targetPosY = mouseY;
+      mouseClick = true;
+    }
+    else if (e.which == 3) {
+      rightMouseDown = true;
+      initMouseX = mouseX;
+      initMouseY = mouseY;
+    }
+  });
+
+  canvas.addEventListener("mouseup", (e) => {
+    if (e.which == 3) {
+      rightMouseDown = false;
+      initYawAngle = yawAngle;
+      initPitchAngle = pitchAngle;
+    }
+  });
+
+  canvas.addEventListener("mousemove", (e) => {
+    var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
+    mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
+    mouseY = e.clientY - canvasRect.top;
+  });
+
+  canvas.addEventListener("mouseout", () => {
+    rightMouseDown = false;
+  });
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+
+    if (e.deltaY > 0) {
+      cameraDistance += ZOOMFACTOR;
+    }
+    else {
+      cameraDistance -= ZOOMFACTOR;
+    }
+
+    if (cameraDistance > CAMERAZOOMMAX) {
+      cameraDistance = CAMERAZOOMMAX;
+    }
+    else if (cameraDistance < CAMERAZOOMMIN) {
+      cameraDistance = CAMERAZOOMMIN;
+    }
+
+    console.log("zoom: " + cameraDistance);
+  });
+  window.addEventListener("keydown", () => {
+    keyDown = true;
+  });
+  window.addEventListener("keyup", () => {
+    keyDown = false;
+  });
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
   if (!gl) {
@@ -148,12 +167,16 @@ function runPainter() { // Main game function
   }
 
   gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+  var billboardShader = createShader(gl, gl.VERTEX_SHADER, billboardVertexShaderSource);
 
   // Link the two shaders into a program
   var program = createProgram(gl, vertexShader, fragmentShader);
+  var billboardProgram = createProgram(gl, billboardShader, fragmentShader);
 
   // Look up where the vertex data needs to go
   var positionAttributeLocation = gl.getAttribLocation(program, "aPos");
@@ -161,6 +184,15 @@ function runPainter() { // Main game function
   var viewUniLoc = gl.getUniformLocation(program, "view");
   var projectionUniLoc = gl.getUniformLocation(program, "projection");
   var vertexColorUniLoc = gl.getUniformLocation(program, "ourColor");
+
+  var positionAttributeLocation2 = gl.getAttribLocation(billboardProgram, "vertexPosition_worldspace");
+  var modelUniLoc2 = gl.getUniformLocation(billboardProgram, "model");
+  var cameraUpUniLoc = gl.getUniformLocation(billboardProgram, "cameraUp_worldspace");
+  var cameraRightUniLoc = gl.getUniformLocation(billboardProgram, "cameraRight_worldspace");
+  var billboardCenterUniLoc = gl.getUniformLocation(billboardProgram, "billboardCenter_worldspace");
+  var viewUniLoc2 = gl.getUniformLocation(billboardProgram, "view");
+  var projectionUniLoc2 = gl.getUniformLocation(billboardProgram, "projection")
+  var vertexColorUniLoc2 = gl.getUniformLocation(billboardProgram, "ourColor");
 
   var circleEdges = 30;
   var circleOrigin = 0.0;
@@ -229,20 +261,37 @@ function runPainter() { // Main game function
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 
-  var gridLineVertices = [1.0, 0.0, 0.0,  0.0, 0.0, 0.0];
+  var worldGridLineVertices = [1.0, 0.0, 0.0,  0.0, 0.0, 0.0];
 
-  const gridLineVAO = gl.createVertexArray();
-  const gridLineVBO = gl.createBuffer();
+  const worldGridLineVAO = gl.createVertexArray();
+  const worldGridLineVBO = gl.createBuffer();
 
-  gl.bindVertexArray(gridLineVAO);
+  gl.bindVertexArray(worldGridLineVAO);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gridLineVBO);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridLineVertices), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, worldGridLineVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(worldGridLineVertices), gl.STATIC_DRAW);
 
   gl.vertexAttribPointer(positionAttributeLocation, numComponents, type, normalize,
     stride, offset);
 
   gl.enableVertexAttribArray(positionAttributeLocation);
+
+  gl.bindVertexArray(null);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+  const guideGridLineVAO = gl.createVertexArray();
+  const guideGridLineVBO = gl.createBuffer();
+
+  gl.bindVertexArray(guideGridLineVAO);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, guideGridLineVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(worldGridLineVertices), gl.STATIC_DRAW);
+
+  gl.vertexAttribPointer(positionAttributeLocation2, numComponents, type, normalize,
+    stride, offset);
+
+  gl.enableVertexAttribArray(positionAttributeLocation2);
 
   gl.bindVertexArray(null);
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -281,8 +330,7 @@ function runPainter() { // Main game function
     var projectionMatrix = new THREE.Matrix4();
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
 
-    if(rightMouseDown) {
-      console.log("mouseX :" + mouseX + ", initMouseX: " + initMouseX + ", initYawAngle: " + initYawAngle);
+    if (rightMouseDown) {
       yawAngle = (degToRad * (mouseX - initMouseX)) + initYawAngle
       pitchAngle = (degToRad * (mouseY - initMouseY)) + initPitchAngle
 
@@ -336,6 +384,7 @@ function runPainter() { // Main game function
     gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
 
     var brushColor = new THREE.Vector4(1.0, 0.0, 0.5, 1.0);
+
     gl.uniform4f(vertexColorUniLoc, brushColor.x, brushColor.y, brushColor.z, brushColor.w);
 
     gl.bindVertexArray(circleVAO);
@@ -344,42 +393,94 @@ function runPainter() { // Main game function
     var vertexCount = circleIndices.length;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
-    gl.drawElements(primitiveType, vertexCount, type, offset);
+    //gl.drawElements(primitiveType, vertexCount, type, offset);
     gl.bindVertexArray(null);
 
-    var gridScale = 5;
-    var gridDivisions = 10;
+    var worldGridScale = 5;
+    var worldGridDivisions = 10;
 
-    var gridLineColor = new THREE.Vector4(0.6, 0.6, 0.6, 1.0);
-    var gridAxisColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
+    var worldGridLineColor = new THREE.Vector4(0.6, 0.6, 0.6, 1.0);
+    var worldGridAxisColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
 
     var i, j;
     var xTranslation, zTranslation;
-    for (i = 0; i < (gridDivisions + 1); i++) {
+    for (i = 0; i < (worldGridDivisions + 1); i++) {
       for (j = 0; j < 2; j++) {
-        modelMatrix.makeScale(gridScale, gridScale, gridScale);
+        modelMatrix.makeScale(worldGridScale, worldGridScale, worldGridScale);
         if (j == 0) {
-          xTranslation = (i / gridDivisions) * gridScale;
+          xTranslation = (i / worldGridDivisions) * worldGridScale;
           zTranslation = 0;
           modelMatrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
         }
         else {
-          zTranslation = (i / gridDivisions) * gridScale;
+          zTranslation = (i / worldGridDivisions) * worldGridScale;
           xTranslation = 0;
         }
 
-        if (i == ((Math.floor(gridDivisions / 2)))) {
-          gl.uniform4f(vertexColorUniLoc, gridAxisColor.x, gridAxisColor.y, gridAxisColor.z, gridAxisColor.w);
+        if (i == ((Math.floor(worldGridDivisions / 2)))) {
+          gl.uniform4f(vertexColorUniLoc, worldGridAxisColor.x, worldGridAxisColor.y, worldGridAxisColor.z, worldGridAxisColor.w);
         }
         else {
-          gl.uniform4f(vertexColorUniLoc, gridLineColor.x, gridLineColor.y, gridLineColor.z, gridLineColor.w);
+          gl.uniform4f(vertexColorUniLoc, worldGridLineColor.x, worldGridLineColor.y, worldGridLineColor.z, worldGridLineColor.w);
         }
 
         modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(xTranslation, 0, -zTranslation));
-        modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(-(gridScale / 2), 0, (gridScale / 2)));
+        modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(-(worldGridScale / 2), 0, (worldGridScale / 2)));
         gl.uniformMatrix4fv(modelUniLoc, false, modelMatrix.elements);
 
-        gl.bindVertexArray(gridLineVAO);
+        gl.bindVertexArray(worldGridLineVAO);
+
+        primitiveType = gl.LINE_STRIP;
+        vertexCount = 2;
+        gl.drawArrays(primitiveType, 0, vertexCount);
+        gl.bindVertexArray(null);
+      }
+    }
+
+
+    gl.useProgram(billboardProgram);
+
+    gl.uniform3fv(cameraUpUniLoc, cameraUp.toArray());
+    gl.uniform3fv(cameraRightUniLoc, cameraRight.toArray());
+
+    gl.uniformMatrix4fv(viewUniLoc2, false, viewMatrix.elements);
+    gl.uniformMatrix4fv(projectionUniLoc2, false, projectionMatrix.elements);
+
+    /*
+    if (keyDown) {
+      if (eventObj.key == 'w') {
+        //translate model matrix
+      }
+    }
+    */
+
+    var guideGridLineColor = new THREE.Vector4(1.0, 0.6, 0.6, 0.3);
+    var guideGridDivisions = 20;
+    var guideGridScale = 40;
+
+    for (i = 0; i < (guideGridDivisions + 1); i++) {
+      for (j = 0; j < 2; j++) {
+        modelMatrix.makeScale(guideGridScale, guideGridScale, guideGridScale);
+        if (j == 0) {
+          xTranslation = (i / guideGridDivisions) * guideGridScale;
+          zTranslation = 0;
+          modelMatrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
+        }
+        else {
+          zTranslation = (i / guideGridDivisions) * guideGridScale;
+          xTranslation = 0;
+        }
+
+        gl.uniform4f(vertexColorUniLoc2, guideGridLineColor.x, guideGridLineColor.y, guideGridLineColor.z, guideGridLineColor.w);
+
+        // Center grid
+        xTranslation -= guideGridScale / 2;
+        zTranslation -= guideGridScale / 2;
+        modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(xTranslation, 0, -zTranslation));
+
+        gl.uniformMatrix4fv(modelUniLoc2, false, modelMatrix.elements);
+
+        gl.bindVertexArray(guideGridLineVAO);
 
         primitiveType = gl.LINE_STRIP;
         vertexCount = 2;
