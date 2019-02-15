@@ -13,6 +13,7 @@ var vertexShaderSource = `#version 300 es
 var billboardVertexShaderSource = `#version 300 es
   in vec3 vertexPosition_worldspace;
 
+  uniform vec3 billboardCenter_worldspace;
   uniform vec3 cameraRight_worldspace;
   uniform vec3 cameraUp_worldspace;
   uniform mat4 model;
@@ -21,7 +22,8 @@ var billboardVertexShaderSource = `#version 300 es
 
   void main() {
     vec3 vertex = (model * vec4(vertexPosition_worldspace, 1.0f)).xyz;
-    vertex = cameraRight_worldspace * vertex.x
+    vertex = billboardCenter_worldspace
+      + cameraRight_worldspace * vertex.x
       + cameraUp_worldspace * vertex.z;
     gl_Position = projection * view * vec4(vertex, 1.0f);
   }
@@ -39,7 +41,6 @@ var fragmentShaderSource = `#version 300 es
   	outColor = ourColor;
   }
 `;
-
 
 function createShader(gl, type, source) {
   var shader = gl.createShader(type);
@@ -83,11 +84,7 @@ function runPainter() { // Main game function
   const CAMERAZOOMMIN = 1;
   const CAMERAZOOMMAX = 50;
 
-  var mouseX = 0;
-  var mouseY = 0;
-  var initMouseX = 0;
-  var initMouseY = 0;
-  var rightMouseDown = false;
+  var inputs = [];
 
   var targetPosX = 300;
   var targetPosY = 240;
@@ -100,27 +97,24 @@ function runPainter() { // Main game function
   var initPitchAngle = pitchAngle;
 
   var cameraDistance = 5;
-  var mouseClick = false;
-
-  var keyDown = false;
 
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
     if (e.which == 1) {
-      targetPosX = mouseX;
-      targetPosY = mouseY;
-      mouseClick = true;
+      targetPosX = inputs.mouseX;
+      targetPosY = inputs.mouseY;
+      inputs.mouseClick = true;
     }
     else if (e.which == 3) {
-      rightMouseDown = true;
-      initMouseX = mouseX;
-      initMouseY = mouseY;
+      inputs.rightMouseDown = true;
+      inputs.initMouseX = inputs.mouseX;
+      inputs.initMouseY = inputs.mouseY;
     }
   });
 
   canvas.addEventListener("mouseup", (e) => {
     if (e.which == 3) {
-      rightMouseDown = false;
+      inputs.rightMouseDown = false;
       initYawAngle = yawAngle;
       initPitchAngle = pitchAngle;
     }
@@ -128,12 +122,12 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("mousemove", (e) => {
     var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
-    mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
-    mouseY = e.clientY - canvasRect.top;
+    inputs.mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
+    inputs.mouseY = e.clientY - canvasRect.top;
   });
 
   canvas.addEventListener("mouseout", () => {
-    rightMouseDown = false;
+    inputs.rightMouseDown = false;
   });
   canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
@@ -154,11 +148,21 @@ function runPainter() { // Main game function
 
     console.log("zoom: " + cameraDistance);
   });
-  window.addEventListener("keydown", () => {
-    keyDown = true;
+  window.addEventListener("keydown", (e) => {
+    if (e.code == "KeyW") {
+      inputs.keyWDown = true;
+    }
+    if (e.code == "KeyS") {
+      inputs.keySDown = true;
+    }
   });
-  window.addEventListener("keyup", () => {
-    keyDown = false;
+  window.addEventListener("keyup", (e) => {
+    if (e.code == "KeyW") {
+      inputs.keyWDown = false;
+    }
+    if (e.code == "KeyS") {
+      inputs.keySDown = false;
+    }
   });
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
@@ -299,6 +303,8 @@ function runPainter() { // Main game function
 
   var cameraPos = new THREE.Vector3();
   var position = new THREE.Vector3();
+  var gridGuidePos = 5;
+  var gridGuideSlideSpeed = 0.05;
 
   requestAnimationFrame(drawScene);
 
@@ -328,11 +334,12 @@ function runPainter() { // Main game function
 
     var cameraMatrix = new THREE.Matrix4();
     var projectionMatrix = new THREE.Matrix4();
+    var modelMatrix = new THREE.Matrix4();
     projectionMatrix.makePerspective(left, right, top, bottom, near, far);
 
-    if (rightMouseDown) {
-      yawAngle = (degToRad * (mouseX - initMouseX)) + initYawAngle
-      pitchAngle = (degToRad * (mouseY - initMouseY)) + initPitchAngle
+    if (inputs.rightMouseDown) {
+      yawAngle = (degToRad * (inputs.mouseX - inputs.initMouseX)) + initYawAngle
+      pitchAngle = (degToRad * (inputs.mouseY - inputs.initMouseY)) + initPitchAngle
 
       var pitchAngleLimit = 89.9 * degToRad;
       if (pitchAngle > pitchAngleLimit) {
@@ -372,12 +379,10 @@ function runPainter() { // Main game function
     var rayWor = new THREE.Vector3(rayClip.x, rayClip.y, rayClip.z);
     rayWor.normalize();
 
-    var modelMatrix = new THREE.Matrix4();
-
-    if (mouseClick) {
+    if (inputs.mouseClick) {
       var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
-      position = rayPos.add(rayWor.multiplyScalar(cameraDistance));
-      mouseClick = false;
+      position = rayPos.add(rayWor.multiplyScalar(cameraDistance - gridGuidePos));
+      inputs.mouseClick = false;
     }
 
     modelMatrix.makeTranslation(position.x, position.y, position.z);
@@ -393,7 +398,7 @@ function runPainter() { // Main game function
     var vertexCount = circleIndices.length;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
-    //gl.drawElements(primitiveType, vertexCount, type, offset);
+    gl.drawElements(primitiveType, vertexCount, type, offset);
     gl.bindVertexArray(null);
 
     var worldGridScale = 5;
@@ -446,13 +451,15 @@ function runPainter() { // Main game function
     gl.uniformMatrix4fv(viewUniLoc2, false, viewMatrix.elements);
     gl.uniformMatrix4fv(projectionUniLoc2, false, projectionMatrix.elements);
 
-    /*
-    if (keyDown) {
-      if (eventObj.key == 'w') {
-        //translate model matrix
-      }
+    if (inputs.keyWDown) {
+      gridGuidePos -= gridGuideSlideSpeed;
     }
-    */
+    else if (inputs.keySDown) {
+      gridGuidePos += gridGuideSlideSpeed;
+    }
+
+    cameraPos.normalize().multiplyScalar(gridGuidePos);
+    gl.uniform3fv(billboardCenterUniLoc, [cameraPos.x, cameraPos.y, cameraPos.z]);
 
     var guideGridLineColor = new THREE.Vector4(1.0, 0.6, 0.6, 0.3);
     var guideGridDivisions = 20;
