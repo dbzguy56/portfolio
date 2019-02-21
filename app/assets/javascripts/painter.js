@@ -98,13 +98,8 @@ function makeGrid(gl, grid, modelMatrix, programLocs, secondaryColor) {
       zTranslation -= grid.scale / 2;
       modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(xTranslation, 0, -zTranslation));
 
-      if (secondaryColor) {
-        if (i == ((Math.floor(grid.divisions / 2)))) {
-          gl.uniform4f(programLocs.vertexColorUni, grid.axisColor.x, grid.axisColor.y, grid.axisColor.z, grid.axisColor.w);
-        }
-        else {
-          gl.uniform4f(programLocs.vertexColorUni, grid.lineColor.x, grid.lineColor.y, grid.lineColor.z, grid.lineColor.w);
-        }
+      if (secondaryColor && i == ((Math.floor(grid.divisions / 2)))) {
+        gl.uniform4f(programLocs.vertexColorUni, grid.axisColor.x, grid.axisColor.y, grid.axisColor.z, grid.axisColor.w);
       }
 
       gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
@@ -133,9 +128,11 @@ function runPainter() { // Main game function
   var billboardProgramLocs = [];
   var guideGrid = [];
   var worldGrid = [];
+  var paintBrush = [];
 
   var targetPosX = 300;
   var targetPosY = 240;
+  var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
 
   var degToRad = (2 * Math.PI) / 360;
 
@@ -148,6 +145,10 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
+    if (inputs.mouseX == null || inputs.mouseY == null) {
+      inputs.mouseX = e.clientX - canvasRect.left + 0.5;
+      inputs.mouseY = e.clientY - canvasRect.top;
+    }
     if (e.which == 1) {
       targetPosX = inputs.mouseX;
       targetPosY = inputs.mouseY;
@@ -161,7 +162,11 @@ function runPainter() { // Main game function
   });
 
   canvas.addEventListener("mouseup", (e) => {
-    if (e.which == 3) {
+    e.preventDefault();
+    if (e.which == 1) {
+      inputs.mouseClick = false;
+    }
+    else if (e.which == 3) {
       inputs.rightMouseDown = false;
       initYawAngle = yawAngle;
       initPitchAngle = pitchAngle;
@@ -169,13 +174,13 @@ function runPainter() { // Main game function
   });
 
   canvas.addEventListener("mousemove", (e) => {
-    var canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
     inputs.mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
     inputs.mouseY = e.clientY - canvasRect.top;
   });
 
   canvas.addEventListener("mouseout", () => {
     inputs.rightMouseDown = false;
+    inputs.mouseClick = false;
   });
   canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
@@ -212,7 +217,8 @@ function runPainter() { // Main game function
       inputs.keySDown = false;
     }
   });
-  canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  canvas.addEventListener("contextmenu", (e) => { e.preventDefault(); });
+  //TODO: Buggy when mouse stays at same pos when refreshed and clicked
 
   if (!gl) {
     return;
@@ -246,17 +252,16 @@ function runPainter() { // Main game function
   billboardProgramLocs.projectionUni = gl.getUniformLocation(billboardProgram, "projection")
   billboardProgramLocs.vertexColorUni = gl.getUniformLocation(billboardProgram, "ourColor");
 
+
   var circleEdges = 30;
   var circleOrigin = 0.0;
   var circleRadius = 0.5;
   var circleAngle = (2 * Math.PI) / circleEdges;
-  /*
+
   var circleVertices = [circleOrigin, circleOrigin, 0];
   var circleIndices = [];
 
   {
-    // x = OriginX + r * cos(angle)
-    // y = OriginY + r * sin(angle)
     var i, x, y;
     for (i = 0; i < (circleEdges + 1); i++) {
       x = circleOrigin + (circleRadius * Math.cos(i * circleAngle));
@@ -277,18 +282,14 @@ function runPainter() { // Main game function
   }
 
   circleVertices.push(0, 0, 1);
-  console.log(circleVertices);
   circleIndices.push(1, circleEdges/2, circleEdges);
-  console.log(circleIndices);
-  */
 
-  var circleVertices = [0.5,  0.5, 0.0,     0.5, -0.5, 0.0,   -0.5, -0.5, 0.0,   -0.5,  0.5, 0.0,     0.0, 0.0, 0.5];
-  var circleIndices = [0, 1, 3,    1, 2, 3,    0, 4, 2];
+  //var circleVertices = [0.5,  0.5, 0.0,     0.5, -0.5, 0.0,   -0.5, -0.5, 0.0,   -0.5,  0.5, 0.0,     0.0, 0.0, 0.5];
+  //var circleIndices = [0, 1, 3,    1, 2, 3,    0, 4, 2];
 
   const circleVAO = gl.createVertexArray();
   const circleVBO = gl.createBuffer();
   const circleEBO = gl.createBuffer();
-
   gl.bindVertexArray(circleVAO);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, circleVBO);
@@ -312,11 +313,11 @@ function runPainter() { // Main game function
   gl.bindVertexArray(null);
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+
   worldGrid.lineVertices = [1.0, 0.0, 0.0,  0.0, 0.0, 0.0];
 
   worldGrid.lineVAO = gl.createVertexArray();
   worldGrid.lineVBO = gl.createBuffer();
-
   gl.bindVertexArray(worldGrid.lineVAO);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, worldGrid.lineVBO);
@@ -333,24 +334,8 @@ function runPainter() { // Main game function
   guideGrid.lineVAO = worldGrid.lineVAO;
 
 
-  /*
-  guideGrid.lineVAO = gl.createVertexArray();
-  guideGrid.lineVBO = gl.createBuffer();
-
-  gl.bindVertexArray(guideGrid.lineVAO);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, guideGrid.lineVBO);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(worldGrid.lineVertices), gl.STATIC_DRAW);
-
-  gl.vertexAttribPointer(billboardProgramLocs.positionAttrib, numComponents, type, normalize,
-    stride, offset);
-
-  gl.enableVertexAttribArray(billboardProgramLocs.positionAttrib);
-
-  gl.bindVertexArray(null);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
-  */
-
+  var NDCx = 0;
+  var NDCy = 0;
 
   var cameraPos = new THREE.Vector3();
   var position = new THREE.Vector3();
@@ -365,8 +350,6 @@ function runPainter() { // Main game function
     gl.clearColor(0.18, 0.22, 0.25, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    gl.useProgram(program);
-
     var top, bottom, left, right;
     var fovy = 45;
     var near = 0.1;
@@ -377,9 +360,8 @@ function runPainter() { // Main game function
     right = bottom * aspect;
     left = -right;
 
-
-    var NDCx = (2.0 * targetPosX)/gl.canvas.width - 1.0;
-    var NDCy = 1.0 - (2.0 * targetPosY)/gl.canvas.height;
+    NDCx = (2.0 * targetPosX)/gl.canvas.width - 1.0;
+    NDCy = 1.0 - (2.0 * targetPosY)/gl.canvas.height;
     var rayNds = new THREE.Vector3(NDCx, NDCy, 1.0);
     var rayClip = new THREE.Vector4(rayNds.x, rayNds.y, -1.0, 1.0); //direction vector pointing into screen
 
@@ -418,6 +400,8 @@ function runPainter() { // Main game function
     // have to pre-multiply because 3js makes an identity matrix with the translation instead of applying to existing
     var viewMatrix = new THREE.Matrix4().getInverse(cameraMatrix);
 
+    gl.useProgram(program);
+
     gl.uniformMatrix4fv(programLocs.viewUni, false, viewMatrix.elements);
     gl.uniformMatrix4fv(programLocs.projectionUni, false, projectionMatrix.elements);
 
@@ -431,27 +415,36 @@ function runPainter() { // Main game function
     rayWor.normalize();
 
     if (inputs.mouseClick) {
+      targetPosX = inputs.mouseX;
+      targetPosY = inputs.mouseY;
       var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
       position = rayPos.add(rayWor.multiplyScalar(cameraDistance - guideGrid.pos));
-      inputs.mouseClick = false;
+
+      paintBrush.push({position: new THREE.Vector3(position.x, position.y, position.z)});
     }
 
-    modelMatrix.makeTranslation(position.x, position.y, position.z);
-    gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
+    var brushColor = new THREE.Vector4(0.0, 0.5, 1.0, 1.0);
 
-    var brushColor = new THREE.Vector4(1.0, 0.0, 0.5, 1.0);
+    for (var i = 0; i < paintBrush.length; i++) {
+      modelMatrix.makeTranslation(paintBrush[i].position.x, paintBrush[i].position.y, paintBrush[i].position.z);
+      gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
+      gl.uniform4f(programLocs.vertexColorUni, brushColor.x, brushColor.y, brushColor.z, brushColor.w);
 
-    gl.uniform4f(programLocs.vertexColorUni, brushColor.x, brushColor.y, brushColor.z, brushColor.w);
+      gl.bindVertexArray(circleVAO);
 
-    gl.bindVertexArray(circleVAO);
+      var primitiveType = gl.TRIANGLES;
+      var vertexCount = circleIndices.length;
+      const type = gl.UNSIGNED_SHORT;
+      const offset = 0;
+      gl.drawElements(primitiveType, vertexCount, type, offset);
+      gl.bindVertexArray(null);
+    }
 
-    var primitiveType = gl.TRIANGLES;
-    var vertexCount = circleIndices.length;
-    const type = gl.UNSIGNED_SHORT;
-    const offset = 0;
-    gl.drawElements(primitiveType, vertexCount, type, offset);
-    gl.bindVertexArray(null);
 
+    gl.useProgram(program);
+
+    gl.uniformMatrix4fv(programLocs.viewUni, false, viewMatrix.elements);
+    gl.uniformMatrix4fv(programLocs.projectionUni, false, projectionMatrix.elements);
 
     worldGrid.scale = 5;
     worldGrid.divisions = 10;
@@ -479,7 +472,7 @@ function runPainter() { // Main game function
     cameraPos.normalize().multiplyScalar(guideGrid.pos);
     gl.uniform3fv(billboardProgramLocs.billboardCenterUni, [cameraPos.x, cameraPos.y, cameraPos.z]);
 
-    guideGrid.lineColor = new THREE.Vector4(1.0, 0.6, 0.6, 0.75);
+    guideGrid.lineColor = new THREE.Vector4(1.0, 0.6, 0.6, 0.5);
     guideGrid.scale = 5;
     guideGrid.divisions = 20;
 
