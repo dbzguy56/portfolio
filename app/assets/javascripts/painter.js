@@ -218,7 +218,44 @@ function runPainter() { // Main game function
     }
   });
   canvas.addEventListener("contextmenu", (e) => { e.preventDefault(); });
-  //TODO: Buggy when mouse stays at same pos when refreshed and clicked
+
+
+  canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    if (inputs.mouseX == null || inputs.mouseY == null) {
+      inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
+      inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+    }
+
+    if (e.touches.length == 1) {
+      targetPosX = inputs.mouseX;
+      targetPosY = inputs.mouseY;
+      inputs.mouseClick = true;
+    }
+    else if (e.touches.length == 2) {
+      inputs.rightMouseDown = true;
+      inputs.initMouseX = inputs.mouseX;
+      inputs.initMouseY = inputs.mouseY;
+    }
+  });
+
+  canvas.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    if (e.touches.length == 0) {
+      inputs.mouseClick = false;
+    }
+    else if (e.touches.length == 1) {
+      inputs.rightMouseDown = false;
+      initYawAngle = yawAngle;
+      initPitchAngle = pitchAngle;
+    }
+  });
+
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
+    inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+  });
 
   if (!gl) {
     return;
@@ -254,7 +291,7 @@ function runPainter() { // Main game function
 
   var stackCount = 30; // Sphere divisions Vertically
   var sectorCount = 30; // Sphere divisions Horizontally
-  var sphereRadius = 1;
+  var sphereRadius = 0.5;
   var sphereVertices = [];
   var sphereIndices = [];
   {
@@ -477,8 +514,8 @@ function runPainter() { // Main game function
     gl.uniform3fv(billboardProgramLocs.billboardCenterUni, [cameraPos.x, cameraPos.y, cameraPos.z]);
 
     guideGrid.lineColor = new THREE.Vector4(1.0, 0.6, 0.6, 0.5);
-    guideGrid.scale = 5;
-    guideGrid.divisions = 20;
+    guideGrid.scale = 20;
+    guideGrid.divisions = worldGrid.divisions;
 
     makeGrid(gl, guideGrid, modelMatrix, billboardProgramLocs, false);
 
