@@ -114,10 +114,47 @@ function makeGrid(gl, grid, modelMatrix, programLocs, secondaryColor) {
   }
 }
 
+function toggleFullscreen(canvas, fullscreen) {
+  const DEFAULT_WIDTH = 640;
+  const DEFAULT_HEIGHT = 480;
+
+  if (fullscreen) {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { /* Firefox */
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE/Edge */
+      document.msExitFullscreen();
+    }
+    canvas.width = DEFAULT_WIDTH;
+    canvas.height = DEFAULT_HEIGHT;
+  }
+  else {
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen();
+    } else if (canvas.mozRequestFullScreen) { /* Firefox */
+      canvas.mozRequestFullScreen();
+    } else if (canvas.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      canvas.webkitRequestFullscreen();
+    } else if (canvas.msRequestFullscreen) { /* IE/Edge */
+      canvas.msRequestFullscreen();
+    }
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  return !fullscreen;
+}
+
 function runPainter() { // Main game function
   // Get a WeblGL context
   var canvas = document.getElementById("painter-canvas");
   var gl = canvas.getContext("webgl2");
+
+  canvas.width = 640;
+  canvas.height = 480;
 
   const ZOOMFACTOR = 1;
   const CAMERAZOOMMIN = 1;
@@ -142,6 +179,7 @@ function runPainter() { // Main game function
   var initPitchAngle = pitchAngle;
 
   var cameraDistance = 5;
+  var fullscreen = false;
 
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
@@ -174,8 +212,14 @@ function runPainter() { // Main game function
   });
 
   canvas.addEventListener("mousemove", (e) => {
-    inputs.mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
-    inputs.mouseY = e.clientY - canvasRect.top;
+    var leftOffset = 0;
+    var topOffset = 0;
+    if (!fullscreen) {
+      leftOffset = canvasRect.left;
+      topOffset = canvasRect.top;
+    }
+    inputs.mouseX = e.clientX - leftOffset + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
+    inputs.mouseY = e.clientY - topOffset;
   });
 
   canvas.addEventListener("mouseout", () => {
@@ -208,7 +252,11 @@ function runPainter() { // Main game function
     if (e.code == "KeyS") {
       inputs.keySDown = true;
     }
+    if ((e.code == "Enter") && (e.altKey)) {
+      fullscreen = toggleFullscreen(canvas, fullscreen);
+    }
   });
+
   window.addEventListener("keyup", (e) => {
     if (e.code == "KeyW") {
       inputs.keyWDown = false;
