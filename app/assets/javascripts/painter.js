@@ -252,51 +252,62 @@ function runPainter() { // Main game function
   billboardProgramLocs.projectionUni = gl.getUniformLocation(billboardProgram, "projection")
   billboardProgramLocs.vertexColorUni = gl.getUniformLocation(billboardProgram, "ourColor");
 
-
-  var circleEdges = 30;
-  var circleOrigin = 0.0;
-  var circleRadius = 0.5;
-  var circleAngle = (2 * Math.PI) / circleEdges;
-
-  var circleVertices = [circleOrigin, circleOrigin, 0];
-  var circleIndices = [];
-
+  var stackCount = 30; // Sphere divisions Vertically
+  var sectorCount = 30; // Sphere divisions Horizontally
+  var sphereRadius = 1;
+  var sphereVertices = [];
+  var sphereIndices = [];
   {
-    var i, x, y;
-    for (i = 0; i < (circleEdges + 1); i++) {
-      x = circleOrigin + (circleRadius * Math.cos(i * circleAngle));
-      y = circleOrigin + (circleRadius * Math.sin(i * circleAngle));
+    var x, y, z, xy, i, j;
+    var stackAngle, sectorAngle;
+    var stackStep = Math.PI / stackCount;
+    var sectorStep = (2 * Math.PI) / sectorCount;
 
-      if (i < circleEdges) {
-        circleVertices.push(x, y, 0);
+    for (i = 0; i <= stackCount; ++i) {
+      stackAngle = (Math.PI / 2) - i * stackStep;
+      xy = sphereRadius * Math.cos(stackAngle);
+      z = sphereRadius * Math.sin(stackAngle);
+
+      for (j = 0; j <= sectorCount; ++j) {
+        sectorAngle = j * sectorStep;
+
+        x = xy * Math.cos(sectorAngle);
+        y = xy * Math.sin(sectorAngle);
+        sphereVertices.push(x, y, z);
       }
+    }
 
-      if (i > 0) {
-        if (i != circleEdges) {
-          circleIndices.push(0, i, i + 1);
-        } else {
-          circleIndices.push(0, i, 1);
+    var k1, k1;
+    for (i = 0; i < stackCount; ++i) {
+      k1 = i * (sectorCount + 1); // beginning of current stack
+      k2 = k1 + sectorCount + 1;
+
+      for (j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+        // 2 triangles per sector excluding first and last stacks
+        // k1 => k2 => k1+1
+        if (i != 0) {
+          sphereIndices.push(k1, k2, (k1 + 1));
+        }
+
+        // k1+1 => k2 => k2+1
+        if (i != (stackCount - 1))
+        {
+          sphereIndices.push((k1 + 1), k2, (k2 + 1));
         }
       }
     }
   }
 
-  circleVertices.push(0, 0, 1);
-  circleIndices.push(1, circleEdges/2, circleEdges);
+  const sphereVAO = gl.createVertexArray();
+  const sphereVBO = gl.createBuffer();
+  const sphereEBO = gl.createBuffer();
+  gl.bindVertexArray(sphereVAO);
 
-  //var circleVertices = [0.5,  0.5, 0.0,     0.5, -0.5, 0.0,   -0.5, -0.5, 0.0,   -0.5,  0.5, 0.0,     0.0, 0.0, 0.5];
-  //var circleIndices = [0, 1, 3,    1, 2, 3,    0, 4, 2];
+  gl.bindBuffer(gl.ARRAY_BUFFER, sphereVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereVertices), gl.STATIC_DRAW);
 
-  const circleVAO = gl.createVertexArray();
-  const circleVBO = gl.createBuffer();
-  const circleEBO = gl.createBuffer();
-  gl.bindVertexArray(circleVAO);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, circleVBO);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(circleVertices), gl.STATIC_DRAW);
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, circleEBO);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(circleIndices), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereEBO);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(sphereIndices), gl.STATIC_DRAW);
 
   // Tell gpu how to read in vertices
   const numComponents = 3;
@@ -304,10 +315,10 @@ function runPainter() { // Main game function
   const normalize = false;
   const stride = 0;
   const offset = 0;
-  gl.vertexAttribPointer(programLocs.positionAttrib, numComponents, type, normalize,
+  gl.vertexAttribPointer(billboardProgramLocs.positionAttrib, numComponents, type, normalize,
     stride, offset);
 
-  gl.enableVertexAttribArray(programLocs.positionAttrib);
+  gl.enableVertexAttribArray(billboardProgramLocs.positionAttrib);
 
   // unbind
   gl.bindVertexArray(null);
@@ -401,7 +412,6 @@ function runPainter() { // Main game function
     var viewMatrix = new THREE.Matrix4().getInverse(cameraMatrix);
 
     gl.useProgram(program);
-
     gl.uniformMatrix4fv(programLocs.viewUni, false, viewMatrix.elements);
     gl.uniformMatrix4fv(programLocs.projectionUni, false, projectionMatrix.elements);
 
@@ -419,7 +429,6 @@ function runPainter() { // Main game function
       targetPosY = inputs.mouseY;
       var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
       position = rayPos.add(rayWor.multiplyScalar(cameraDistance - guideGrid.pos));
-
       paintBrush.push({position: new THREE.Vector3(position.x, position.y, position.z)});
     }
 
@@ -430,21 +439,16 @@ function runPainter() { // Main game function
       gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
       gl.uniform4f(programLocs.vertexColorUni, brushColor.x, brushColor.y, brushColor.z, brushColor.w);
 
-      gl.bindVertexArray(circleVAO);
+      gl.bindVertexArray(sphereVAO);
 
       var primitiveType = gl.TRIANGLES;
-      var vertexCount = circleIndices.length;
+      var vertexCount = sphereIndices.length;
       const type = gl.UNSIGNED_SHORT;
       const offset = 0;
       gl.drawElements(primitiveType, vertexCount, type, offset);
       gl.bindVertexArray(null);
     }
 
-
-    gl.useProgram(program);
-
-    gl.uniformMatrix4fv(programLocs.viewUni, false, viewMatrix.elements);
-    gl.uniformMatrix4fv(programLocs.projectionUni, false, projectionMatrix.elements);
 
     worldGrid.scale = 5;
     worldGrid.divisions = 10;
