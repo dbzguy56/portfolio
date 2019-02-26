@@ -126,8 +126,6 @@ function makeGrid(gl, grid, modelMatrix, programLocs, secondaryColor) {
 }
 
 function toggleFullscreen(canvas, fullscreen) {
-  const DEFAULT_WIDTH = 640;
-  const DEFAULT_HEIGHT = 480;
 
   if (fullscreen) {
     if (document.exitFullscreen) {
@@ -139,8 +137,6 @@ function toggleFullscreen(canvas, fullscreen) {
     } else if (document.msExitFullscreen) { /* IE/Edge */
       document.msExitFullscreen();
     }
-    canvas.width = DEFAULT_WIDTH;
-    canvas.height = DEFAULT_HEIGHT;
   }
   else {
     if (canvas.requestFullscreen) {
@@ -152,8 +148,6 @@ function toggleFullscreen(canvas, fullscreen) {
     } else if (canvas.msRequestFullscreen) { /* IE/Edge */
       canvas.msRequestFullscreen();
     }
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
   }
 
   return !fullscreen;
@@ -167,8 +161,8 @@ function runPainter() { // Main game function
   const enterFullscreenImg = new Image();
   enterFullscreenImg.src = '/assets/enterFullscreen.svg';
 
-  canvas.width = 640;
-  canvas.height = 480;
+  //canvas.width = 640;
+  //canvas.height = 480;
 
   const ZOOMFACTOR = 1;
   const CAMERAZOOMMIN = 1;
@@ -210,6 +204,8 @@ function runPainter() { // Main game function
   var cameraDistance = 5;
   var fullscreen = false;
 
+  // --- MOUSE HANDLING ---
+
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
     if (inputs.mouseX == null || inputs.mouseY == null) {
@@ -242,16 +238,8 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("mousemove", (e) => {
     canvasRect = document.getElementById("painter-canvas").getBoundingClientRect()
-    var leftOffset = 0;
-    var topOffset = 0;
-    if (!fullscreen) {
-      leftOffset = canvasRect.left;
-      topOffset = canvasRect.top;
-    }
-    console.log(leftOffset);
-    console.log(e.clientX);
-    inputs.mouseX = e.clientX - leftOffset + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
-    inputs.mouseY = e.clientY - topOffset;
+    inputs.mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
+    inputs.mouseY = e.clientY - canvasRect.top;
   });
 
   canvas.addEventListener("mouseout", () => {
@@ -277,6 +265,8 @@ function runPainter() { // Main game function
 
     console.log("zoom: " + cameraDistance);
   });
+
+  // --- KEYBOARD HANDLING ---
   window.addEventListener("keydown", (e) => {
     if (e.code == "KeyW") {
       inputs.keyWDown = true;
@@ -322,6 +312,8 @@ function runPainter() { // Main game function
   });
   canvas.addEventListener("contextmenu", (e) => { e.preventDefault(); });
 
+  // --- TOUCH HANDLING ---
+  var tpCache = [];
 
   canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -334,6 +326,7 @@ function runPainter() { // Main game function
       inputs.rightMouseDown = true;
       inputs.initMouseX = inputs.mouseX;
       inputs.initMouseY = inputs.mouseY;
+      inputs.mouseClick = false;
     }
     else if (e.touches.length == 1) {
       targetPosX = inputs.mouseX;
@@ -342,23 +335,32 @@ function runPainter() { // Main game function
     }
   });
 
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    if (inputs.rightMouseDown) {
+      inputs.mouseClick = false;
+    }
+    canvasRect = document.getElementById("painter-canvas").getBoundingClientRect()
+    inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
+    inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+  });
+
   canvas.addEventListener("touchend", (e) => {
     e.preventDefault();
     if (e.touches.length == 0) {
       inputs.mouseClick = false;
-    }
-    else if (e.touches.length == 1) {
       inputs.rightMouseDown = false;
       initYawAngle = yawAngle;
       initPitchAngle = pitchAngle;
     }
   });
 
-  canvas.addEventListener("touchmove", (e) => {
+  canvas.addEventListener("touchcancel", (e) => {
     e.preventDefault();
-    canvasRect = document.getElementById("painter-canvas").getBoundingClientRect()
-    inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
-    inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+    inputs.mouseClick = false;
+    inputs.rightMouseDown = false;
+    initYawAngle = yawAngle;
+    initPitchAngle = pitchAngle;
   });
 
   enterFullscreenImg.addEventListener("load", () => {
@@ -536,13 +538,23 @@ function runPainter() { // Main game function
   guideGrid.pos = 0;
   guideGrid.slideSpeed = 0.5;
 
-  var brushColor = new THREE.Vector4(0.0, 0.5, 1.0, 1.0);
+  var brushColor = new THREE.Vector4(colors[6][0], colors[6][1], colors[6][2], 1.0);
   var numColors = colors.length;
   var squareSize, i;
 
   requestAnimationFrame(drawScene);
 
   function drawScene() {
+
+    if (!fullscreen) {
+      canvas.height = window.innerHeight * 0.8;
+      canvas.width = window.innerWidth * 0.8;
+    }
+    else {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    }
+
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     gl.clearColor(0.18, 0.22, 0.25, 1.0);
@@ -655,8 +667,9 @@ function runPainter() { // Main game function
     worldGrid.scale = 30;
     worldGrid.divisions = worldGrid.scale * 2;
 
-    worldGrid.lineColor = new THREE.Vector4(0.6, 0.6, 0.6, 1.0);
-    worldGrid.axisColor = new THREE.Vector4(0.0, 0.0, 0.0, 1.0);
+    var worldGridAlpha = 0.5;
+    worldGrid.lineColor = new THREE.Vector4(0.6, 0.6, 0.6, worldGridAlpha);
+    worldGrid.axisColor = new THREE.Vector4(0.0, 0.0, 0.0, worldGridAlpha);
 
     makeGrid(gl, worldGrid, modelMatrix, programLocs, true);
 
@@ -695,14 +708,20 @@ function runPainter() { // Main game function
     projectionMatrix.makeOrthographic(0, gl.canvas.width, 0, gl.canvas.height, near, far);
     gl.uniformMatrix4fv(uiProjectionUni, false, projectionMatrix.elements);
 
-
-    squareSize = gl.canvas.width / 16;
+    squareSize = canvas.width / 16;
     var colorSelectionOffset = 100;
-    var colorSelectionWidth = gl.canvas.width - (2 * colorSelectionOffset);
+
+    if (canvas.width <= 768) {
+      squareSize = canvas.width / 10;
+      colorSelectionOffset = 10;
+    }
+
+    var colorSelectionWidth = canvas.width - (2 * colorSelectionOffset);
     var colorSelectionX = colorSelectionWidth / numColors;
     var colorSelectionY = 20;
     var squareX;
     var squareColor;
+    colorCoords = []
 
     for (i = 0; i < numColors; i++) {
       squareX = colorSelectionX * i + colorSelectionOffset;
