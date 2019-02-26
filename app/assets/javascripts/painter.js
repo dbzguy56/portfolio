@@ -40,6 +40,20 @@ var uiVertexShaderSource = `#version 300 es
   }
 `
 
+var textureShaderSource =`#version 300 es
+  in vec4 vertex; // <vec2 position, vec2 texCoords>
+
+  out vec2 texCoords;
+
+  uniform mat4 model;
+  uniform mat4 projection;
+
+  void main() {
+    texCoords = vertex.zw;
+    gl_Position = projection * model * vec4(vertex.xy, 0.0, 1.0);
+  }
+`
+
 var fragmentShaderSource = `#version 300 es
   precision mediump float;
 
@@ -52,6 +66,20 @@ var fragmentShaderSource = `#version 300 es
   	outColor = ourColor;
   }
 `;
+
+var textureFragShaderSource = `#version 300 es
+  precision mediump float;
+
+  in vec2 texCoords;
+  out vec4 outColor;
+
+  uniform sampler2D image;
+
+  void main() {
+
+  	outColor = texture(image, texCoords);
+  }
+`
 
 function createShader(gl, type, source) {
   var shader = gl.createShader(type);
@@ -159,10 +187,7 @@ function runPainter() { // Main game function
   var gl = canvas.getContext("webgl2");
 
   const enterFullscreenImg = new Image();
-  enterFullscreenImg.src = '/assets/enterFullscreen.svg';
-
-  //canvas.width = 640;
-  //canvas.height = 480;
+  enterFullscreenImg.src = '/assets/jim_512.jpg';
 
   const ZOOMFACTOR = 1;
   const CAMERAZOOMMIN = 1;
@@ -209,12 +234,13 @@ function runPainter() { // Main game function
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
     if (inputs.mouseX == null || inputs.mouseY == null) {
+      canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
       inputs.mouseX = e.clientX - canvasRect.left + 0.5;
       inputs.mouseY = e.clientY - canvasRect.top;
     }
     if (e.which == 1) {
-      targetPosX = inputs.mouseX;
-      targetPosY = inputs.mouseY;
+      //targetPosX = inputs.mouseX;
+      //targetPosY = inputs.mouseY;
       inputs.mouseClick = true;
     }
     else if (e.which == 3) {
@@ -237,7 +263,7 @@ function runPainter() { // Main game function
   });
 
   canvas.addEventListener("mousemove", (e) => {
-    canvasRect = document.getElementById("painter-canvas").getBoundingClientRect()
+    canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
     inputs.mouseX = e.clientX - canvasRect.left + 0.5; //for some reason it goes to -0.5 when on left edge if canvas
     inputs.mouseY = e.clientY - canvasRect.top;
   });
@@ -317,20 +343,25 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
-    if (inputs.mouseX == null || inputs.mouseY == null) {
-      inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
-      inputs.mouseY = e.touches[0].clientY - canvasRect.top;
-    }
 
-    if (e.touches.length == 2) {
+    canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
+    inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
+    inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+
+
+    if (e.targetTouches.length == 2) {
+      // Cache the touch points for later processing of 2-touch pinch/zoom
+      for (var i=0; i < e.targetTouches.length; i++) {
+        tpCache.push(e.targetTouches[i]);
+      }
       inputs.rightMouseDown = true;
       inputs.initMouseX = inputs.mouseX;
       inputs.initMouseY = inputs.mouseY;
       inputs.mouseClick = false;
     }
-    else if (e.touches.length == 1) {
-      targetPosX = inputs.mouseX;
-      targetPosY = inputs.mouseY;
+    else if (e.targetTouches.length == 1) {
+      //targetPosX = inputs.mouseX;
+      //targetPosY = inputs.mouseY;
       inputs.mouseClick = true;
     }
   });
@@ -341,13 +372,88 @@ function runPainter() { // Main game function
       inputs.mouseClick = false;
     }
     canvasRect = document.getElementById("painter-canvas").getBoundingClientRect()
-    inputs.mouseX = e.touches[0].clientX - canvasRect.left + 0.5;
-    inputs.mouseY = e.touches[0].clientY - canvasRect.top;
+    inputs.mouseX = e.targetTouches[0].clientX - canvasRect.left + 0.5;
+    inputs.mouseY = e.targetTouches[0].clientY - canvasRect.top;
+
+    if (e.targetTouches.length == 2 && e.changedTouches.length == 2) {
+      // Check if the two target touches are the same ones that started
+      // the 2-touch
+      var point1=-1, point2=-1;
+      for (var i=0; i < tpCache.length; i++) {
+        if (tpCache[i].identifier == e.targetTouches[0].identifier) {
+          point1 = i;
+        }
+        if (tpCache[i].identifier == e.targetTouches[1].identifier) {
+          point2 = i;
+        }
+      }
+      if (point1 >=0 && point2 >= 0) {
+        // Calculate the difference between the start and move coordinates
+        var diff1 = Math.abs(tpCache[point1].clientX - e.targetTouches[0].clientX);
+        var diff2 = Math.abs(tpCache[point2].clientX - e.targetTouches[1].clientX);
+        var nonABSDiff1 = tpCache[point1].clientX - e.targetTouches[0].clientX;
+        var nonABSDiff2 = tpCache[point2].clientX - e.targetTouches[1].clientX;
+
+        // This threshold is device dependent as well as application specific
+        var PINCH_THRESHHOLD = e.target.clientWidth / 12;
+        if (diff1 >= PINCH_THRESHHOLD && diff2 >= PINCH_THRESHHOLD)
+        {
+          var pinchZoomFactor = ZOOMFACTOR / 2;
+          if (!((e.targetTouches[0].clientX > tpCache[point1].clientX)
+              && (e.targetTouches[1].clientX > tpCache[point2].clientX))
+              && !((e.targetTouches[0].clientX < tpCache[point1].clientX)
+              && (e.targetTouches[1].clientX < tpCache[point2].clientX))) {
+            // If both points are not bigger AND both are not smaller than initial values
+            /*
+            if ((tpCache[point1].clientX) > (tpCache[point2].clientX)) {
+              pinchZoomFactor *= -1;
+            }
+
+            if ((nonABSDiff1 < 0) && (nonABSDiff2 > 0)) {
+              cameraDistance -= pinchZoomFactor; // ZOOM IN
+            }
+            else if ((nonABSDiff1 > 0) && (nonABSDiff2 < 0)) {
+              cameraDistance += pinchZoomFactor; // ZOOM OUT
+            }
+            */
+
+            if ((tpCache[point1].clientX) > (tpCache[point2].clientX)) {
+              if ((nonABSDiff1 < 0) && (nonABSDiff2 > 0)) {
+                cameraDistance -= pinchZoomFactor; // ZOOM IN
+              }
+              else if ((nonABSDiff1 > 0) && (nonABSDiff2 < 0)) {
+                cameraDistance += pinchZoomFactor; // ZOOM OUT
+              }
+            }
+            else if ((tpCache[point1].clientX) < (tpCache[point2].clientX)) {
+              if ((nonABSDiff1 > 0) && (nonABSDiff2 < 0)) {
+                cameraDistance -= pinchZoomFactor; // ZOOM IN
+              }
+              else if ((nonABSDiff1 < 0) && (nonABSDiff2 > 0)) {
+                cameraDistance += pinchZoomFactor; // ZOOM OUT
+              }
+            }
+
+          }
+        }
+
+
+        if (cameraDistance > CAMERAZOOMMAX) {
+          cameraDistance = CAMERAZOOMMAX;
+        }
+        else if (cameraDistance < CAMERAZOOMMIN) {
+          cameraDistance = CAMERAZOOMMIN;
+        }
+      }
+      else {
+        tpCache = [];
+      }
+    }
   });
 
   canvas.addEventListener("touchend", (e) => {
     e.preventDefault();
-    if (e.touches.length == 0) {
+    if (e.targetTouches.length == 0) {
       inputs.mouseClick = false;
       inputs.rightMouseDown = false;
       initYawAngle = yawAngle;
@@ -363,8 +469,21 @@ function runPainter() { // Main game function
     initPitchAngle = pitchAngle;
   });
 
+  /*
+  // --- IMAGE LOADING ---
   enterFullscreenImg.addEventListener("load", () => {
+    gl.useProgram(texProgram);
+
+    gl.activeTexture(gl.TEXTURE0);
+    const enterFullscreenTex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, enterFullscreenTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, enterFullscreenImg);
+
+    gl.uniform1i(texImageUni, 0);
+
+    requestAnimationFrame(drawScene);
   });
+  */
 
   if (!gl) {
     return;
@@ -378,11 +497,14 @@ function runPainter() { // Main game function
   var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
   var billboardShader = createShader(gl, gl.VERTEX_SHADER, billboardVertexShaderSource);
   var uiShader = createShader(gl, gl.VERTEX_SHADER, uiVertexShaderSource);
+  var texShader = createShader(gl, gl.VERTEX_SHADER, textureShaderSource);
+  var texFragShader = createShader(gl, gl.FRAGMENT_SHADER, textureFragShaderSource);
 
   // Link the two shaders into a program
   var program = createProgram(gl, vertexShader, fragmentShader);
   var billboardProgram = createProgram(gl, billboardShader, fragmentShader);
   var uiProgram = createProgram(gl, uiShader, fragmentShader);
+  var texProgram = createProgram(gl, texShader, texFragShader);
 
   // Look up where the vertex data needs to go
   programLocs.positionAttrib = gl.getAttribLocation(program, "aPos");
@@ -404,6 +526,11 @@ function runPainter() { // Main game function
   uiModelUni = gl.getUniformLocation(uiProgram, "model");
   uiProjectionUni = gl.getUniformLocation(uiProgram, "projection");
   uiVertexColorUni = gl.getUniformLocation(uiProgram, "ourColor");
+
+  texPositionAttrib = gl.getAttribLocation(texProgram, "vertex");
+  texModelUni = gl.getUniformLocation(texProgram, "model");
+  texProjectionUni = gl.getUniformLocation(texProgram, "projection");
+  texImageUni = gl.getUniformLocation(texProgram, "image");
 
 
   // --- SPHERE ---
@@ -530,6 +657,39 @@ function runPainter() { // Main game function
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 
+  // --- TEXTURE ---
+  var texVertices = [
+    // Pos      // Tex Coords
+    1.0, 1.0,   1.0, 1.0,
+    1.0, 0.0,   1.0, 0.0,
+    0.0, 0.0,   0.0, 0.0,
+    0.0, 1.0,   0.0, 1.0
+  ];
+
+  var texIndices = [
+    0, 1, 3,
+    1, 2, 3
+  ];
+
+  const texVAO = gl.createVertexArray();
+  const texVBO = gl.createBuffer();
+  const texEBO = gl.createBuffer();
+  gl.bindVertexArray(texVAO);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, texVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texVertices), gl.STATIC_DRAW);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, texEBO);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(texIndices), gl.STATIC_DRAW);
+
+  gl.vertexAttribPointer(texPositionAttrib, 4, type, normalize, stride, offset);
+  gl.enableVertexAttribArray(texPositionAttrib);
+
+  gl.bindVertexArray(null);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+
   var NDCx = 0;
   var NDCy = 0;
 
@@ -570,8 +730,8 @@ function runPainter() { // Main game function
     right = bottom * aspect;
     left = -right;
 
-    NDCx = ((2.0 * targetPosX) / gl.canvas.width) - 1.0;
-    NDCy = 1.0 - ((2.0 * targetPosY) / gl.canvas.height);
+    NDCx = ((2.0 * inputs.mouseX) / gl.canvas.width) - 1.0;
+    NDCy = 1.0 - ((2.0 * inputs.mouseY) / gl.canvas.height);
     var rayNds = new THREE.Vector3(NDCx, NDCy, 1.0);
     var rayClip = new THREE.Vector4(rayNds.x, rayNds.y, -1.0, 1.0); //direction vector pointing into screen
 
@@ -626,8 +786,8 @@ function runPainter() { // Main game function
     if (inputs.mouseClick) {
       var colorSelect = false;
       for (i = 0; i < numColors; i++) {
-        if (((targetPosY > colorCoords[i][1]) && (targetPosY < (colorCoords[i][1] + squareSize))) &&
-          ((targetPosX > colorCoords[i][0]) && (targetPosX < (colorCoords[i][0] + squareSize)))) {
+        if (((inputs.mouseY > colorCoords[i][1]) && (inputs.mouseY < (colorCoords[i][1] + squareSize))) &&
+          ((inputs.mouseX > colorCoords[i][0]) && (inputs.mouseX < (colorCoords[i][0] + squareSize)))) {
 
           brushColor.set(colors[i][0], colors[i][1], colors[i][2], 1.0);
           colorSelect = true;
@@ -635,8 +795,8 @@ function runPainter() { // Main game function
       }
 
       if (!colorSelect) {
-        targetPosX = inputs.mouseX;
-        targetPosY = inputs.mouseY;
+        //targetPosX = inputs.mouseX;
+        //targetPosY = inputs.mouseY;
         var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
         position = rayPos.add(rayWor.multiplyScalar(cameraDistance - guideGrid.pos));
         paintBrush.push({position: new THREE.Vector3(position.x, position.y, position.z),
@@ -646,7 +806,6 @@ function runPainter() { // Main game function
 
 
     // --- DRAW BRUSH STROKES ---
-
     for (i = 0; i < paintBrush.length; i++) {
       modelMatrix.makeTranslation(paintBrush[i].position.x, paintBrush[i].position.y, paintBrush[i].position.z);
       gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
@@ -683,11 +842,12 @@ function runPainter() { // Main game function
     gl.uniformMatrix4fv(billboardProgramLocs.viewUni, false, viewMatrix.elements);
     gl.uniformMatrix4fv(billboardProgramLocs.projectionUni, false, projectionMatrix.elements);
 
-    if (inputs.keyWDown && (guideGrid.pos > -(CAMERAZOOMMAX - 1))) {
-      guideGrid.pos -= guideGrid.slideSpeed;
+    var zoomLevelFactor = 1;//cameraDistance / 10;
+    if (inputs.keyWDown && (guideGrid.pos > -(CAMERAZOOMMAX - 2))) {
+      guideGrid.pos -= guideGrid.slideSpeed * zoomLevelFactor;
     }
     else if (inputs.keySDown && (guideGrid.pos < (CAMERAZOOMMAX - 1))) {
-      guideGrid.pos += guideGrid.slideSpeed;
+      guideGrid.pos += guideGrid.slideSpeed * zoomLevelFactor;
     }
 
     cameraPos.normalize().multiplyScalar(guideGrid.pos);
@@ -711,12 +871,12 @@ function runPainter() { // Main game function
     squareSize = canvas.width / 16;
     var colorSelectionOffset = 100;
 
-    if (canvas.width <= 768) {
+    if (gl.canvas.width <= 768) {
       squareSize = canvas.width / 10;
       colorSelectionOffset = 10;
     }
 
-    var colorSelectionWidth = canvas.width - (2 * colorSelectionOffset);
+    var colorSelectionWidth = gl.canvas.width - (2 * colorSelectionOffset);
     var colorSelectionX = colorSelectionWidth / numColors;
     var colorSelectionY = 20;
     var squareX;
@@ -741,6 +901,26 @@ function runPainter() { // Main game function
       gl.drawElements(primitiveType, vertexCount, type, offset);
       gl.bindVertexArray(null);
     }
+
+    /*
+    // --- DRAW TEXTURES ---
+    gl.useProgram(texProgram);
+    gl.uniformMatrix4fv(texProjectionUni, false, projectionMatrix.elements);
+
+    var texPosX = (7 * gl.canvas.width) / 8;
+    var texPosY = (15 * gl.canvas.height) / 16;
+
+    modelMatrix.makeTranslation(texPosX, texPosY, 0);
+    gl.uniformMatrix4fv(texModelUni, false, modelMatrix.elements);
+
+    gl.bindVertexArray(texVAO);
+    var primitiveType = gl.TRIANGLES;
+    var vertexCount = texIndices.length;
+    const type = gl.UNSIGNED_SHORT;
+    const offset = 0;
+    gl.drawElements(primitiveType, vertexCount, type, offset);
+    gl.bindVertexArray(null);
+    */
 
     requestAnimationFrame(drawScene);
   }
