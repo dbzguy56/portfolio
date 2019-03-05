@@ -40,7 +40,7 @@ var uiVertexShaderSource = `#version 300 es
   }
 `
 
-var textureShaderSource =`#version 300 es
+var textureShaderSource = `#version 300 es
   in vec4 vertex; // <vec2 position, vec2 texCoords>
 
   out vec2 texCoords;
@@ -302,6 +302,10 @@ function runPainter() { // Main game function
     }
     if ((e.code == "Enter") && (e.altKey)) {
       fullscreen = toggleFullscreen(canvas, fullscreen);
+    }
+    if (e.code == "Space") {
+      e.preventDefault();
+      paintBrush = [];
     }
   });
   /*
