@@ -1,6 +1,9 @@
 
 <span class="title"><%= link_to post.title, post.content %></span>
 <span display="block">
+  <% if post.content.include? "youtube.com/watch" %>
+    <button class="expando-button" onclick="handleExpandClick(this)">&#8853</button>
+  <% end %>
   Submitted <%= time_ago_in_words(post.created_at) %> ago by
   <%= link_to post.user.name, post.user %> <%= link_to gravatar_for(post.user, size: 50), post.user %>
 </span>
@@ -18,3 +21,8 @@
       data: { confirm: "Are you sure?" }, id: "delete-link" %>
   <% end %>
 </div>
+<% if post.content.include? "youtube.com/watch?v=" %>
+  <br>
+  <iframe hidden="true" src="<%= post.content.sub "watch?v=", "embed/" %>" allowfullscreen="allowfullscreen">
+  </iframe>
+<% end %>

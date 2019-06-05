@@ -248,7 +248,7 @@ $(document).ready ->
   colorPieces[4].style.fill = 'magenta'
   colorPieces[5].style.fill = 'cyan'
 
-$(document).ready ->
+
   $(window).on 'scroll', ->
     scrollPanel = document.getElementById('scroll-panel')
     scrollValue = 300
