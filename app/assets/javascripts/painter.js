@@ -186,8 +186,8 @@ function runPainter() { // Main game function
   var canvas = document.getElementById("painter-canvas");
   var gl = canvas.getContext("webgl2");
 
-  const enterFullscreenImg = new Image();
-  enterFullscreenImg.src = '/assets/jim_512.jpg';
+  const enterFullscreenImg = new Image(512, 512);
+  enterFullscreenImg.src = '/assets/enterFullscreen.png';
 
   const ZOOMFACTOR = 1;
   const CAMERAZOOMMIN = 1;
@@ -229,6 +229,8 @@ function runPainter() { // Main game function
   var cameraDistance = 5;
   var fullscreen = false;
 
+  var iconSize, texPosX, texPosY;
+
   // --- MOUSE HANDLING ---
 
   canvas.addEventListener("mousedown", (e) => {
@@ -241,7 +243,14 @@ function runPainter() { // Main game function
     if (e.which == 1) {
       //targetPosX = inputs.mouseX;
       //targetPosY = inputs.mouseY;
-      inputs.mouseClick = true;
+      if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
+        (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
+      {
+        fullscreen = toggleFullscreen(canvas, fullscreen);
+      }
+      else {
+        inputs.mouseClick = true;
+      }
     }
     else if (e.which == 3) {
       inputs.rightMouseDown = true;
@@ -366,7 +375,11 @@ function runPainter() { // Main game function
     else if (e.targetTouches.length == 1) {
       //targetPosX = inputs.mouseX;
       //targetPosY = inputs.mouseY;
-      inputs.mouseClick = true;
+      if (!((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
+        (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize))))
+      {
+        inputs.mouseClick = true;
+      }
     }
   });
 
@@ -460,8 +473,14 @@ function runPainter() { // Main game function
     if (e.targetTouches.length == 0) {
       inputs.mouseClick = false;
       inputs.rightMouseDown = false;
-      initYawAngle = yawAngle;
-      initPitchAngle = pitchAngle;
+      if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
+        (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
+      {
+        fullscreen = toggleFullscreen(canvas, fullscreen);
+      } else {
+        initYawAngle = yawAngle;
+        initPitchAngle = pitchAngle;
+      }
     }
   });
 
@@ -473,21 +492,26 @@ function runPainter() { // Main game function
     initPitchAngle = pitchAngle;
   });
 
-  /*
+
   // --- IMAGE LOADING ---
+  const enterFullscreenTex = gl.createTexture();
+
   enterFullscreenImg.addEventListener("load", () => {
     gl.useProgram(texProgram);
 
     gl.activeTexture(gl.TEXTURE0);
-    const enterFullscreenTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, enterFullscreenTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, enterFullscreenImg);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, enterFullscreenImg);
+
+    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
     gl.uniform1i(texImageUni, 0);
 
     requestAnimationFrame(drawScene);
   });
-  */
 
   if (!gl) {
     return;
@@ -706,8 +730,6 @@ function runPainter() { // Main game function
   var numColors = colors.length;
   var squareSize, i;
 
-  requestAnimationFrame(drawScene);
-
   function drawScene() {
 
     if (!fullscreen) {
@@ -874,8 +896,9 @@ function runPainter() { // Main game function
 
     squareSize = canvas.width / 16;
     var colorSelectionOffset = 100;
+    var canvasWidthLimit = 768;
 
-    if (gl.canvas.width <= 768) {
+    if (gl.canvas.width <= canvasWidthLimit) {
       squareSize = canvas.width / 10;
       colorSelectionOffset = 10;
     }
@@ -906,15 +929,26 @@ function runPainter() { // Main game function
       gl.bindVertexArray(null);
     }
 
-    /*
+
     // --- DRAW TEXTURES ---
     gl.useProgram(texProgram);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, enterFullscreenTex);
+
+    gl.uniform1i(texImageUni, 0);
     gl.uniformMatrix4fv(texProjectionUni, false, projectionMatrix.elements);
 
-    var texPosX = (7 * gl.canvas.width) / 8;
-    var texPosY = (15 * gl.canvas.height) / 16;
+    iconSize = gl.canvas.height / 16;
+    texPosX = (14 * gl.canvas.width) / 16;
+    texPosY = (14.5 * gl.canvas.height) / 16;
 
-    modelMatrix.makeTranslation(texPosX, texPosY, 0);
+    if (gl.canvas.width > canvasWidthLimit) {
+      texPosX = (19 * gl.canvas.width) / 20;
+    }
+
+    modelMatrix.makeScale(iconSize, iconSize, 0);
+    modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(texPosX, texPosY, 0));
     gl.uniformMatrix4fv(texModelUni, false, modelMatrix.elements);
 
     gl.bindVertexArray(texVAO);
@@ -924,7 +958,7 @@ function runPainter() { // Main game function
     const offset = 0;
     gl.drawElements(primitiveType, vertexCount, type, offset);
     gl.bindVertexArray(null);
-    */
+
 
     requestAnimationFrame(drawScene);
   }
