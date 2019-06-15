@@ -1,61 +1,281 @@
-<div class="container py-5">
-  <div class="row">
-    <div class="col-lg-12 col-xl-7">
-    <%= link_to image_tag('mastermindScreenshot', class: "img-fluid"), mastermind_path %>
-    </div>
-
-    <div class="col">
-      <h2 class="center">Mastermind</h2>
-      <p> This project and the next project are right here on this website!<p>
-      <p> This is a game that I first made in Ruby and was played using a command line.</p>
-      <p>The goal of the game is to find the secret color code that the computer has randomly
-      picked. You can see the results of the color combination you picked in the previous turns.
-      Using the previous rows and their results, it can give you a better guess at the right
-      combination. Click on the image to go there and see if you are a mastermind! </p>
-
-      <p> Javascript/Coffeescript was mostly used for this project to handle all of the
-      logic and handle all of the events.</p>
-
-      <br>
-
-      <div id="portfolio-github" class="graycenter">
-        <p> You can find the source code on github by clicking the image below: </p>
-        <div class="gray-background text-center">
-          <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
-        </div>
+<h2 class="center">3D Painter (Ongoing project)</h2>
+<div id="painter-images" class="carousel slide" data-ride="carousel">
+  <ul class="carousel-indicators">
+    <li data-target="#painter-images" data-slide-to="0" class="active"></li>
+    <li data-target="#painter-images" data-slide-to="1"></li>
+  </ul>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <%= link_to image_tag('painter'), painter_path %>
+      <div class="carousel-caption">
+        <p>Draw cool things in 3D!</p>
       </div>
     </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('painter-soon'), painter_path %>
+      <div class="carousel-caption">
+        <p>Multiplayer coming soon!</p>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#painter-images" data-slide="prev">
+      <span class="carousel-control-prev-icon""></span>
+    </a>
+    <a class="carousel-control-next" href="#painter-images" data-slide="next">
+      <span class="carousel-control-next-icon""></span>
+    </a>
   </div>
 </div>
 
 <div class="container py-5">
-  <div class="row">
-    <div class="col-lg-12 col-xl-7">
-      <%= link_to image_tag('miniRedditScreenshot', class: "img-fluid"), mini_reddit_path, class: "img-fluid" %>
-    </div>
+  <p> This project and the next project are right here on this website!<p>
+  <p> This is a game that I first made in Ruby and was played using a command line.</p>
+  <p>The goal of the game is to find the secret color code that the computer has randomly
+  picked. You can see the results of the color combination you picked in the previous turns.
+  Using the previous rows and their results, it can give you a better guess at the right
+  combination. Click on the image to go there and see if you are a mastermind! </p>
 
-    <div class="col">
-      <h2 class="center">Mini-Reddt</h2>
-      <p> This is a reddit clone I made. </p>
-      <p>You can create an account using an email and start creating posts! </p>
-      <p>You can link videos or images that everyone on the website can see. </p>
-      <p>Other people can comment on your posts and reply to each other's
-      comments. You can also view a person's profile to see what they have posted and what
-      they have commented on. </p>
+  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
+  logic and handle all of the events.</p>
 
-      <p> Ruby on Rails was mostly used to create all the users, redirect them to the
-      right pages and for post/comment creation. </p>
+  <br>
 
-      <br>
-
-      <div id="portfolio-github" class="text-center">
-        <p> You can find the source code on github by clicking the image below: </p>
-        <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
-      </div>
+  <div id="portfolio-github" class="graycenter">
+    <p> You can find the source code on github by clicking the image below: </p>
+    <div class="gray-background text-center">
+      <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
     </div>
   </div>
 </div>
 
+<h2 class="center">Mini-Reddit</h2>
+<div id="mini-reddit-images" class="carousel slide" data-ride="carousel">
+  <ul class="carousel-indicators">
+    <li data-target="#mini-reddit-images" data-slide-to="0" class="active"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="1"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="2"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="3"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="4"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="5"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="6"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="7"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="8"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="9"></li>
+    <li data-target="#mini-reddit-images" data-slide-to="10"></li>
+  </ul>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <%= link_to image_tag('mini-reddit-index'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Check out Mini-Reddit!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-video'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Embed youtube videos!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-signup'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Sign up to create your own account!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-login'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Login into your account!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('user-settings'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Update your user settings!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-post-creation'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Create your own posts!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-post-edit'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Edit your posts!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-pagination'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Full page numbering system!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-comment'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Comment on other user's posts!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-all-comments'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Reply to user's comments!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('user-activity'), mini_reddit_path %>
+      <div class="carousel-caption">
+        <p>Check out a user's activity!</p>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#mini-reddit-images" data-slide="prev">
+      <span class="carousel-control-prev-icon""></span>
+    </a>
+    <a class="carousel-control-next" href="#mini-reddit-images" data-slide="next">
+      <span class="carousel-control-next-icon""></span>
+    </a>
+  </div>
+</div>
+<div class="container py-5">
+  <p> This is a reddit clone I made. </p>
+  <p>You can create an account using an email and start creating posts! </p>
+  <p>You can link videos or images that everyone on the website can see. </p>
+  <p>Other people can comment on your posts and reply to each other's
+  comments. You can also view a person's profile to see what they have posted and what
+  they have commented on. </p>
+
+  <p> Ruby on Rails was mostly used to create all the users, redirect them to the
+  right pages and for post/comment creation. </p>
+
+  <br>
+
+  <div id="portfolio-github" class="text-center">
+    <p> You can find the source code on github by clicking the image below: </p>
+    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+  </div>
+</div>
+
+
+<h2 class="center">Mastermind</h2>
+<div id="mastermind-images" class="carousel slide" data-ride="carousel">
+  <ul class="carousel-indicators">
+    <li data-target="#mastermind-images" data-slide-to="0" class="active"></li>
+    <li data-target="#mastermind-images" data-slide-to="1"></li>
+    <li data-target="#mastermind-images" data-slide-to="2"></li>
+    <li data-target="#mastermind-images" data-slide-to="3"></li>
+    <li data-target="#mastermind-images" data-slide-to="4"></li>
+  </ul>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <%= link_to image_tag('mastermind-start'), mastermind_path %>
+      <div class="carousel-caption">
+        <p>Solve the secret colour code to see if you are a mastermind!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mastermind-dragstart'), mastermind_path %>
+      <div class="carousel-caption">
+        <p>Drag a colour from the colour palette!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mastermind-dragend'), mastermind_path %>
+      <div class="carousel-caption">
+        <p>Drop the colour into the board!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mastermind-instructions'), mastermind_path %>
+      <div class="carousel-caption">
+        <p>Full instructions on the game page!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mastermind-winner'), mastermind_path %>
+      <div class="carousel-caption">
+        <p>Use previous feedback to win the game!</p>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#mastermind-images" data-slide="prev">
+      <span class="carousel-control-prev-icon""></span>
+    </a>
+    <a class="carousel-control-next" href="#mastermind-images" data-slide="next">
+      <span class="carousel-control-next-icon""></span>
+    </a>
+  </div>
+</div>
+
+<div class="container py-5">
+  <p> This project and the next project are right here on this website!<p>
+  <p> This is a game that I first made in Ruby and was played using a command line.</p>
+  <p>The goal of the game is to find the secret color code that the computer has randomly
+  picked. You can see the results of the color combination you picked in the previous turns.
+  Using the previous rows and their results, it can give you a better guess at the right
+  combination. Click on the image to go there and see if you are a mastermind! </p>
+
+  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
+  logic and handle all of the events.</p>
+
+  <br>
+
+  <div id="portfolio-github" class="graycenter">
+    <p> You can find the source code on github by clicking the image below: </p>
+    <div class="gray-background text-center">
+      <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
+    </div>
+  </div>
+</div>
+
+
+<h2 class="center">This Portfolio</h2>
+<div id="portfolio-images" class="carousel slide" data-ride="carousel">
+  <ul class="carousel-indicators">
+    <li data-target="#portfolio-images" data-slide-to="0" class="active"></li>
+    <li data-target="#portfolio-images" data-slide-to="1"></li>
+    <li data-target="#portfolio-images" data-slide-to="2"></li>
+    <li data-target="#portfolio-images" data-slide-to="3"></li>
+    <li data-target="#portfolio-images" data-slide-to="4"></li>
+  </ul>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <%= link_to image_tag('home') %>
+      <div class="carousel-caption">
+        <p>I am constantly improving my portfolio!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mobile-home') %>
+      <div class="carousel-caption">
+        <p>Website is responsive!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mobile-menu') %>
+      <div class="carousel-caption">
+        <p>Even the menu is responsive!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-mobile') %>
+      <div class="carousel-caption">
+        <p>Mini-reddit is responsive!</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <%= link_to image_tag('mini-reddit-mobile-comments') %>
+      <div class="carousel-caption">
+        <p>As well as the comments on a post!</p>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#portfolio-images" data-slide="prev">
+      <span class="carousel-control-prev-icon""></span>
+    </a>
+    <a class="carousel-control-next" href="#portfolio-images" data-slide="next">
+      <span class="carousel-control-next-icon""></span>
+    </a>
+  </div>
+</div>
 
 
 <div class="container py-4">
