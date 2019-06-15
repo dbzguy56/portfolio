@@ -6,13 +6,13 @@
   </ul>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <%= link_to image_tag('painter'), painter_path %>
+      <%= link_to image_tag('painter'), painter_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Draw cool things in 3D!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('painter-soon'), painter_path %>
+      <%= link_to image_tag('painter-soon'), painter_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Multiplayer coming soon!</p>
       </div>
@@ -27,24 +27,28 @@
 </div>
 
 <div class="container py-5">
-  <p> This project and the next project are right here on this website!<p>
-  <p> This is a game that I first made in Ruby and was played using a command line.</p>
-  <p>The goal of the game is to find the secret color code that the computer has randomly
-  picked. You can see the results of the color combination you picked in the previous turns.
-  Using the previous rows and their results, it can give you a better guess at the right
-  combination. Click on the image to go there and see if you are a mastermind! </p>
 
-  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
-  logic and handle all of the events.</p>
+  <div class="tab">
+    <button class="tablinks default-tab" onclick="openTab(event, 'painter-description')">Description</button>
+    <button class="tablinks" onclick="openTab(event, 'painter-code')">Code</button>
+  </div>
+
+  <div id="painter-description" class="tabcontent">
+    <p>Create beautiful art on a 3D canvas. Use multiple brush colours, the world grid
+    and guide grid to create anything you can imagine. This game runs on desktop as well
+    as mobile and will soon support multiplayer for people who want to paint together.
+    Uses hardware accelerated graphics all from the comfort of your web browser. </p>
+  </div>
+
+  <div id="painter-code" class="tabcontent">
+    <p>Technologies used: WebGL, Javascript, Three.js, Heroku</p>
+    <p><a href="https://github.com/dbzguy56/portfolio/blob/3d_painter_setup/app/assets/javascripts/painter.js"
+      target="_blank">
+      Logic can be found here.</a></p>
+    <p>This is an ongoing project, next steps include multiplayer pictionary through the use of websockets.</p>
+  </div>
 
   <br>
-
-  <div id="portfolio-github" class="graycenter">
-    <p> You can find the source code on github by clicking the image below: </p>
-    <div class="gray-background text-center">
-      <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
-    </div>
-  </div>
 </div>
 
 <h2 class="center">Mini-Reddit</h2>
@@ -64,67 +68,67 @@
   </ul>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <%= link_to image_tag('mini-reddit-index'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-index'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Check out Mini-Reddit!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-video'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-video'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Embed youtube videos!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-signup'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-signup'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Sign up to create your own account!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-login'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-login'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Login into your account!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('user-settings'), mini_reddit_path %>
+      <%= link_to image_tag('user-settings'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Update your user settings!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-post-creation'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-post-creation'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Create your own posts!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-post-edit'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-post-edit'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Edit your posts!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-pagination'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-pagination'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Full page numbering system!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-comment'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-comment'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Comment on other user's posts!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mini-reddit-all-comments'), mini_reddit_path %>
+      <%= link_to image_tag('mini-reddit-all-comments'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Reply to user's comments!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('user-activity'), mini_reddit_path %>
+      <%= link_to image_tag('user-activity'), mini_reddit_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Check out a user's activity!</p>
       </div>
@@ -138,21 +142,27 @@
   </div>
 </div>
 <div class="container py-5">
-  <p> This is a reddit clone I made. </p>
-  <p>You can create an account using an email and start creating posts! </p>
-  <p>You can link videos or images that everyone on the website can see. </p>
-  <p>Other people can comment on your posts and reply to each other's
-  comments. You can also view a person's profile to see what they have posted and what
-  they have commented on. </p>
+  <div class="tab">
+    <button class="tablinks default-tab" onclick="openTab(event, 'mini-reddit-description')">Description</button>
+    <button class="tablinks" onclick="openTab(event, 'mini-reddit-code')">Code</button>
+  </div>
 
-  <p> Ruby on Rails was mostly used to create all the users, redirect them to the
-  right pages and for post/comment creation. </p>
+  <div id="mini-reddit-description" class="tabcontent">
+    <p>Share links over the internet with the Mini-Reddit clone.
+    Sign up and comment on various posts on what others have posted.
+    Reply to other comments to have full-on discussions. See what your
+    favourite user has been up to by looking at their recent website activity. </p>
+  </div>
 
-  <br>
-
-  <div id="portfolio-github" class="text-center">
-    <p> You can find the source code on github by clicking the image below: </p>
-    <span class="gray-background"><%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %></span>
+  <div id="mini-reddit-code" class="tabcontent">
+    <p>Ruby On Rails, eRuby, HTML, CSS, SASS, Bootstrap, Heroku</p>
+    <p>Logic can be found across multiple files/directories like the
+    <a href="https://github.com/dbzguy56/portfolio/tree/master/app/controllers"
+      target="_blank">
+      controllers</a> and
+    <a href="https://github.com/dbzguy56/portfolio/tree/master/app/models"
+      target="_blank">
+        models </a>folders.</p>
   </div>
 </div>
 
@@ -168,31 +178,31 @@
   </ul>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <%= link_to image_tag('mastermind-start'), mastermind_path %>
+      <%= link_to image_tag('mastermind-start'), mastermind_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Solve the secret colour code to see if you are a mastermind!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mastermind-dragstart'), mastermind_path %>
+      <%= link_to image_tag('mastermind-dragstart'), mastermind_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Drag a colour from the colour palette!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mastermind-dragend'), mastermind_path %>
+      <%= link_to image_tag('mastermind-dragend'), mastermind_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Drop the colour into the board!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mastermind-instructions'), mastermind_path %>
+      <%= link_to image_tag('mastermind-instructions'), mastermind_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Full instructions on the game page!</p>
       </div>
     </div>
     <div class="carousel-item">
-      <%= link_to image_tag('mastermind-winner'), mastermind_path %>
+      <%= link_to image_tag('mastermind-winner'), mastermind_path, target: "_blank" %>
       <div class="carousel-caption">
         <p>Use previous feedback to win the game!</p>
       </div>
@@ -207,23 +217,22 @@
 </div>
 
 <div class="container py-5">
-  <p> This project and the next project are right here on this website!<p>
-  <p> This is a game that I first made in Ruby and was played using a command line.</p>
-  <p>The goal of the game is to find the secret color code that the computer has randomly
-  picked. You can see the results of the color combination you picked in the previous turns.
-  Using the previous rows and their results, it can give you a better guess at the right
-  combination. Click on the image to go there and see if you are a mastermind! </p>
+  <div class="tab">
+    <button class="tablinks default-tab" onclick="openTab(event, 'mastermind-description')">Description</button>
+    <button class="tablinks" onclick="openTab(event, 'mastermind-code')">Code</button>
+  </div>
 
-  <p> Javascript/Coffeescript was mostly used for this project to handle all of the
-  logic and handle all of the events.</p>
+  <div id="mastermind-description" class="tabcontent">
+    <p>Test your code-cracking skills with Mastermind.
+      Mastermind is a strategy game that must be won in 12 turns or less.
+      The game creates a secret colour code. You must find it using the feedback
+      from your previous guesses. Can you crack the secret colour code?  </p>
+  </div>
 
-  <br>
-
-  <div id="portfolio-github" class="graycenter">
-    <p> You can find the source code on github by clicking the image below: </p>
-    <div class="gray-background text-center">
-      <%= link_to image_tag('githubLogo'), 'https://github.com/dbzguy56/portfolio' %>
-    </div>
+  <div id="mastermind-code" class="tabcontent">
+    <p>Technologies used: Javascript, Coffeescript, jQuery, HTML, eRuby, CSS, SASS, Bootstrap, Heroku </p>
+    <p><a href="https://github.com/dbzguy56/portfolio/blob/master/app/assets/javascripts/mastermind.coffee"
+        target="_blank">Logic can be found here.</a></p>
   </div>
 </div>
 
