@@ -16,3 +16,4 @@
 //= require bootstrap
 //= require three
 //= require mini_reddit.js
+//= require farbtastic

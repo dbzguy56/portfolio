@@ -13,11 +13,19 @@
 
   <div id="control-icons" class="material-icons noselect">
     <div class="flex-container-top">
-      <button class="decrease-brush-size-btn">remove_circle_outline</button>
-      <span class="brush-size-span">Size: </span>
-      <button class="increase-brush-size-btn">add_circle_outline</button>
-    </div>
+      <div>
+        <button class="decrease-brush-size-btn">remove_circle_outline</button>
+        <span class="brush-size-span">Size: </span>
+        <button class="increase-brush-size-btn">add_circle_outline</button>
+      </div>
 
+      <div>
+        <button class="color-selector-btn">color_lens</button>
+      </div>
+
+
+    </div>
+    <div id="colorpicker"></div>
     <div class="flex-container-middle">
       <div class="flex-col">
         <button class="guide-grid-in-btn">remove_circle_outline</button>
@@ -47,7 +55,9 @@
   </div>
 </div>
 
-
+<form style="display:none">
+  <input type="text" id="color" name="color" value="#0000ff" />
+</form>
 
 <div class="row my-5 mx-0 px-5">
   <div class="col-12 center mb-3">

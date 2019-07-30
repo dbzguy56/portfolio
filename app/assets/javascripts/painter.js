@@ -249,6 +249,8 @@ function runPainter() { // Main game function
   var increaseBrushSizeButton = document.querySelectorAll(".increase-brush-size-btn");
   var decreaseBrushSizeButton = document.querySelectorAll(".decrease-brush-size-btn");
 
+  var colorSelectorButton = document.querySelectorAll(".color-selector-btn");
+
   var rotationToggleButton = document.querySelectorAll(".rotate-toggle-btn");
   var clearCanvasButton = document.querySelectorAll(".clear-canvas-btn");
   var fullscreenButton = document.querySelectorAll(".fullscreen-btn");
@@ -308,6 +310,28 @@ function runPainter() { // Main game function
       brushSize -= BRUSHSIZEINCREMENT;
       brushSizeSpan.innerHTML = "Size: " + (brushSize * 10);
     }
+  });
+
+  var paletteHidden = true;
+  colorSelectorButton[0].addEventListener("click", (e) => {
+    colorSelector = document.getElementById("colorpicker");
+    if (paletteHidden){
+      colorSelector.style.visibility = "visible";
+      colorSelectorButton[0].innerHTML = "clear";
+    }
+    else {
+      var colorPicked = document.getElementById("color").value;
+      var r = parseInt(colorPicked[1] + colorPicked[2], 16);
+      var g = parseInt(colorPicked[3] + colorPicked[4], 16);
+      var b = parseInt(colorPicked[5] + colorPicked[6], 16);
+      brushColor.set(r / 256,
+        g / 256,
+        b / 256,
+        1.0);
+      colorSelector.style.visibility = "hidden";
+      colorSelectorButton[0].innerHTML = "color_lens";
+    }
+    paletteHidden = !paletteHidden;
   });
 
   zoomInButton.forEach(zoomButton => ["mousedown", "touchstart"].forEach(
@@ -947,6 +971,12 @@ function runPainter() { // Main game function
     rayWor.normalize();
 
     if (inputs.mouseClick) {
+      var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
+      position = rayPos.add(rayWor.multiplyScalar(cameraDistance - guideGrid.pos));
+      paintBrush.push({position: new THREE.Vector3(position.x, position.y, position.z),
+        color: new THREE.Vector4(brushColor.x, brushColor.y, brushColor.z, brushColor.w),
+        size: brushSize});
+      /*
       var colorSelect = false;
       for (i = 0; i < numColors; i++) {
         if (((inputs.mouseY > colorCoords[i][1]) && (inputs.mouseY < (colorCoords[i][1] + squareSize))) &&
@@ -966,6 +996,7 @@ function runPainter() { // Main game function
           color: new THREE.Vector4(brushColor.x, brushColor.y, brushColor.z, brushColor.w),
           size: brushSize});
       }
+      */
     }
 
 
@@ -1024,7 +1055,7 @@ function runPainter() { // Main game function
 
     makeGrid(gl, guideGrid, modelMatrix, billboardProgramLocs, false);
 
-
+    /*
     // --- DRAW COLOR SELECTION SQUARES ---
     gl.useProgram(uiProgram);
 
@@ -1067,7 +1098,7 @@ function runPainter() { // Main game function
       gl.drawElements(primitiveType, vertexCount, type, offset);
       gl.bindVertexArray(null);
     }
-
+    */
 
     // --- DRAW TEXTURES ---
     /*
@@ -1106,5 +1137,6 @@ function runPainter() { // Main game function
 }
 
 $(document).ready(function(){
+  $('#colorpicker').farbtastic('#color');
   runPainter();
 })
