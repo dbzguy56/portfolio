@@ -184,14 +184,20 @@ function toggleFullscreen(canvas, fullscreen) {
 function runPainter() { // Main game function
   // Get a WeblGL context
   var canvas = document.getElementById("painter-canvas");
+  var canvasContainer = document.getElementById("canvas-container");
   var gl = canvas.getContext("webgl2");
 
+  /*
   const enterFullscreenImg = new Image(512, 512);
   enterFullscreenImg.src = '/assets/enterFullscreen.png';
+  */
 
-  const ZOOMFACTOR = 1;
+  const ZOOMFACTOR = 0.5;
   const CAMERAZOOMMIN = 1;
   const CAMERAZOOMMAX = 50;
+
+  var zoomingIn = false;
+  var zoomingOut = false;
 
   var inputs = [];
   var programLocs = [];
@@ -199,7 +205,15 @@ function runPainter() { // Main game function
   var guideGrid = [];
   var worldGrid = [];
   var paintBrush = [];
+  var undoArr = [];
 
+  var brushSize = 0.5;
+  const BRUSHSIZEINCREMENT = 0.5;
+  const BRUSHSIZEMAX = 10;
+  const BRUSHSIZEMIN = 0.5;
+
+  var brushSizeSpan = document.querySelectorAll(".brush-size-span")[0];
+  brushSizeSpan.innerHTML = "Size: " + (brushSize * 10);
 
   var colors = [
     [0, 0, 0],  // black
@@ -231,43 +245,137 @@ function runPainter() { // Main game function
 
   var iconSize, texPosX, texPosY;
 
+  // --- UI BUTTON HANDLING ---
+  var increaseBrushSizeButton = document.querySelectorAll(".increase-brush-size-btn");
+  var decreaseBrushSizeButton = document.querySelectorAll(".decrease-brush-size-btn");
+
+  var rotationToggleButton = document.querySelectorAll(".rotate-toggle-btn");
+  var clearCanvasButton = document.querySelectorAll(".clear-canvas-btn");
+  var fullscreenButton = document.querySelectorAll(".fullscreen-btn");
+  var undoButton = document.querySelectorAll(".undo-btn");
+
+  var zoomInButton = document.querySelectorAll(".zoom-in-btn");
+  var zoomOutButton = document.querySelectorAll(".zoom-out-btn");
+  var guideGridInButton = document.querySelectorAll(".guide-grid-in-btn");
+  var guideGridOutButton = document.querySelectorAll(".guide-grid-out-btn");
+
+  var rotateToggle = false;
+
+  rotationToggleButton[0].addEventListener("click", (e) => {
+    rotateToggle = !rotateToggle;
+    if (rotateToggle)
+    {
+      rotationToggleButton[0].innerHTML = "brush";
+    }
+    else
+    {
+      rotationToggleButton[0].innerHTML = "3d_rotation";
+    }
+  });
+
+  clearCanvasButton[0].addEventListener("click", (e) => {
+    paintBrush = [];
+    undoArr = [];
+  });
+
+  fullscreenButton[0].addEventListener("click", (e) => {
+    fullscreen = toggleFullscreen(canvasContainer, fullscreen);
+
+    if (fullscreen) {
+      fullscreenButton[0].innerHTML = "fullscreen_exit";
+    }
+    else {
+      fullscreenButton[0].innerHTML = "fullscreen";
+    }
+  });
+
+  undoButton[0].addEventListener("click", (e) => {
+    var elementsToPop = undoArr.pop();
+    for (var i = 0; i < elementsToPop; i++) {
+      paintBrush.pop();
+    }
+  });
+
+  increaseBrushSizeButton[0].addEventListener("click", (e) => {
+    if (brushSize < BRUSHSIZEMAX) {
+      brushSize += BRUSHSIZEINCREMENT;
+      brushSizeSpan.innerHTML = "Size: " + (brushSize * 10);
+    }
+  });
+
+  decreaseBrushSizeButton[0].addEventListener("click", (e) => {
+    if (brushSize > BRUSHSIZEMIN) {
+      brushSize -= BRUSHSIZEINCREMENT;
+      brushSizeSpan.innerHTML = "Size: " + (brushSize * 10);
+    }
+  });
+
+  zoomInButton.forEach(zoomButton => ["mousedown", "touchstart"].forEach(
+    action => zoomButton.addEventListener(action, () => zoomingIn = true)));
+  zoomInButton.forEach(zoomButton => ["mouseup", "touchend", "mouseout"].forEach(
+    action => zoomButton.addEventListener(action, () => zoomingIn = false)));
+
+  zoomOutButton.forEach(zoomButton => ["mousedown", "touchstart"].forEach(
+    action => zoomButton.addEventListener(action, () => zoomingOut = true)));
+  zoomOutButton.forEach(zoomButton => ["mouseup", "touchend", "mouseout"].forEach(
+    action => zoomButton.addEventListener(action, () => zoomingOut = false)));
+
+  guideGridInButton.forEach(guideGridButton => ["mousedown", "touchstart"].forEach(
+    action => guideGridButton.addEventListener(action, () => inputs.keyWDown = true)));
+  guideGridInButton.forEach(guideGridButton => ["mouseup", "touchend", "mouseout"].forEach(
+    action => guideGridButton.addEventListener(action, () => inputs.keyWDown = false)));
+
+  guideGridOutButton.forEach(guideGridButton => ["mousedown", "touchstart"].forEach(
+    action => guideGridButton.addEventListener(action, () => inputs.keySDown = true)));
+  guideGridOutButton.forEach(guideGridButton => ["mouseup", "touchend", "mouseout"].forEach(
+    action => guideGridButton.addEventListener(action, () => inputs.keySDown = false)));
+
+
   // --- MOUSE HANDLING ---
 
+  var brushArrStartSize;
   canvas.addEventListener("mousedown", (e) => {
     e.preventDefault();
     if (inputs.mouseX == null || inputs.mouseY == null) {
-      canvasRect = document.getElementById("painter-canvas").getBoundingClientRect();
-      inputs.mouseX = e.clientX - canvasRect.left + 0.5;
-      inputs.mouseY = e.clientY - canvasRect.top;
+      canvasRect = document.getElementById("canvas-container").getBoundingClientRect();
+      inputs.mouseX = canvasRect.left + 0.5;
+      inputs.mouseY = canvasRect.top;
+      //inputs.mouseX = e.clientX - canvasRect.left + 0.5;
+      //inputs.mouseY = e.clientY - canvasRect.top;
     }
-    if (e.which == 1) {
+    if (e.which == 3 || (rotateToggle && e.which == 1)) {
+      inputs.rightMouseDown = true;
+      inputs.initMouseX = inputs.mouseX;
+      inputs.initMouseY = inputs.mouseY;
+    }
+    else if (e.which == 1) {
       //targetPosX = inputs.mouseX;
       //targetPosY = inputs.mouseY;
+      /* For texture fullscreen
       if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
         (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
       {
-        fullscreen = toggleFullscreen(canvas, fullscreen);
+        fullscreen = toggleFullscreen(canvasContainer, fullscreen);
       }
       else {
         inputs.mouseClick = true;
       }
-    }
-    else if (e.which == 3) {
-      inputs.rightMouseDown = true;
-      inputs.initMouseX = inputs.mouseX;
-      inputs.initMouseY = inputs.mouseY;
+      */
+      inputs.mouseClick = true;
+      brushArrStartSize = paintBrush.length;
     }
   });
 
   canvas.addEventListener("mouseup", (e) => {
     e.preventDefault();
-    if (e.which == 1) {
-      inputs.mouseClick = false;
-    }
-    else if (e.which == 3) {
+    if (e.which == 3 || rotateToggle) {
       inputs.rightMouseDown = false;
       initYawAngle = yawAngle;
       initPitchAngle = pitchAngle;
+    }
+    else if (e.which == 1) {
+      inputs.mouseClick = false;
+      undoArr.push(paintBrush.length - brushArrStartSize);
     }
   });
 
@@ -298,7 +406,7 @@ function runPainter() { // Main game function
       cameraDistance = CAMERAZOOMMIN;
     }
 
-    console.log("zoom: " + cameraDistance);
+    //console.log("zoom: " + cameraDistance);
   });
 
   // --- KEYBOARD HANDLING ---
@@ -310,7 +418,7 @@ function runPainter() { // Main game function
       inputs.keySDown = true;
     }
     if ((e.code == "Enter") && (e.altKey)) {
-      fullscreen = toggleFullscreen(canvas, fullscreen);
+      fullscreen = toggleFullscreen(canvasContainer, fullscreen);
     }
     if (e.code == "Space") {
       e.preventDefault();
@@ -330,6 +438,8 @@ function runPainter() { // Main game function
   });
   window.addEventListener("webkitfullscreenchange", () => {
     if (!fullscreen) {
+      canvasContainer.width = 640;
+      canvasContainer.height = 480;
       canvas.width = 640;
       canvas.height = 480;
     }
@@ -362,7 +472,7 @@ function runPainter() { // Main game function
     inputs.mouseY = e.touches[0].clientY - canvasRect.top;
 
 
-    if (e.targetTouches.length == 2) {
+    if (e.targetTouches.length == 2 || (rotateToggle && e.targetTouches.length == 1)) {
       // Cache the touch points for later processing of 2-touch pinch/zoom
       for (var i=0; i < e.targetTouches.length; i++) {
         tpCache.push(e.targetTouches[i]);
@@ -375,11 +485,15 @@ function runPainter() { // Main game function
     else if (e.targetTouches.length == 1) {
       //targetPosX = inputs.mouseX;
       //targetPosY = inputs.mouseY;
+      /* For texture fullscreen
       if (!((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
         (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize))))
       {
         inputs.mouseClick = true;
       }
+      */
+      inputs.mouseClick = true;
+      brushArrStartSize = paintBrush.length;
     }
   });
 
@@ -415,7 +529,7 @@ function runPainter() { // Main game function
         var PINCH_THRESHHOLD = e.target.clientWidth / 12;
         if (diff1 >= PINCH_THRESHHOLD && diff2 >= PINCH_THRESHHOLD)
         {
-          var pinchZoomFactor = ZOOMFACTOR / 2;
+          var pinchZoomFactor = ZOOMFACTOR;
           if (!((e.targetTouches[0].clientX > tpCache[point1].clientX)
               && (e.targetTouches[1].clientX > tpCache[point2].clientX))
               && !((e.targetTouches[0].clientX < tpCache[point1].clientX)
@@ -453,14 +567,6 @@ function runPainter() { // Main game function
 
           }
         }
-
-
-        if (cameraDistance > CAMERAZOOMMAX) {
-          cameraDistance = CAMERAZOOMMAX;
-        }
-        else if (cameraDistance < CAMERAZOOMMIN) {
-          cameraDistance = CAMERAZOOMMIN;
-        }
       }
       else {
         tpCache = [];
@@ -470,16 +576,22 @@ function runPainter() { // Main game function
 
   canvas.addEventListener("touchend", (e) => {
     e.preventDefault();
-    if (e.targetTouches.length == 0) {
+    if (e.targetTouches.length == 0 || rotateToggle) {
       inputs.mouseClick = false;
       inputs.rightMouseDown = false;
+      /* For textured fullscreen button
       if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
         (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
       {
-        fullscreen = toggleFullscreen(canvas, fullscreen);
+        fullscreen = toggleFullscreen(canvasContainer, fullscreen);
       } else {
         initYawAngle = yawAngle;
         initPitchAngle = pitchAngle;
+      }*/
+      initYawAngle = yawAngle;
+      initPitchAngle = pitchAngle;
+      if (!rotateToggle) {
+        undoArr.push(paintBrush.length - brushArrStartSize);
       }
     }
   });
@@ -494,6 +606,7 @@ function runPainter() { // Main game function
 
 
   // --- IMAGE LOADING ---
+  /*
   const enterFullscreenTex = gl.createTexture();
 
   enterFullscreenImg.addEventListener("load", () => {
@@ -512,6 +625,7 @@ function runPainter() { // Main game function
 
     requestAnimationFrame(drawScene);
   });
+  */
 
   if (!gl) {
     return;
@@ -730,15 +844,38 @@ function runPainter() { // Main game function
   var numColors = colors.length;
   var squareSize, i;
 
+  // REMOVE IF RENDERING IMAGES/TEXTURES
+  requestAnimationFrame(drawScene);
+
   function drawScene() {
+
+    if (zoomingOut) {
+      cameraDistance += ZOOMFACTOR;
+    } else if (zoomingIn) {
+      cameraDistance -= ZOOMFACTOR;
+    }
+
+    if (cameraDistance < CAMERAZOOMMIN) {
+      cameraDistance = CAMERAZOOMMIN;
+    } else if (cameraDistance > CAMERAZOOMMAX) {
+      cameraDistance = CAMERAZOOMMAX;
+    }
 
     if (!fullscreen) {
       canvas.height = window.innerHeight * 0.8;
       canvas.width = window.innerWidth * 0.8;
+      canvasContainer.height = window.innerHeight * 0.8;
+      canvasContainer.width = window.innerWidth * 0.8;
+
+      canvasContainer.style.left = ((window.innerWidth - canvas.width) / 2).toString() + "px";
     }
     else {
       canvas.height = window.innerHeight;
       canvas.width = window.innerWidth;
+      //canvasContainer.height = canvas.height;
+      //canvasContainer.width = canvas.width;
+
+      canvasContainer.style.left = "0px";
     }
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -826,14 +963,16 @@ function runPainter() { // Main game function
         var rayPos = new THREE.Vector3(cameraPos.x, cameraPos.y, cameraPos.z); //ray's position
         position = rayPos.add(rayWor.multiplyScalar(cameraDistance - guideGrid.pos));
         paintBrush.push({position: new THREE.Vector3(position.x, position.y, position.z),
-          color: new THREE.Vector4(brushColor.x, brushColor.y, brushColor.z, brushColor.w)});
+          color: new THREE.Vector4(brushColor.x, brushColor.y, brushColor.z, brushColor.w),
+          size: brushSize});
       }
     }
 
 
     // --- DRAW BRUSH STROKES ---
     for (i = 0; i < paintBrush.length; i++) {
-      modelMatrix.makeTranslation(paintBrush[i].position.x, paintBrush[i].position.y, paintBrush[i].position.z);
+      modelMatrix.makeScale(paintBrush[i].size, paintBrush[i].size, paintBrush[i].size);
+      modelMatrix.premultiply(new THREE.Matrix4().makeTranslation(paintBrush[i].position.x, paintBrush[i].position.y, paintBrush[i].position.z));
       gl.uniformMatrix4fv(programLocs.modelUni, false, modelMatrix.elements);
       gl.uniform4f(programLocs.vertexColorUni, paintBrush[i].color.x, paintBrush[i].color.y, paintBrush[i].color.z, paintBrush[i].color.w);
 
@@ -931,6 +1070,8 @@ function runPainter() { // Main game function
 
 
     // --- DRAW TEXTURES ---
+    /*
+    Fullscreen Texture
     gl.useProgram(texProgram);
 
     gl.activeTexture(gl.TEXTURE0);
@@ -958,7 +1099,7 @@ function runPainter() { // Main game function
     const offset = 0;
     gl.drawElements(primitiveType, vertexCount, type, offset);
     gl.bindVertexArray(null);
-
+    */
 
     requestAnimationFrame(drawScene);
   }

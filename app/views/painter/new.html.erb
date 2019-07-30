@@ -1,6 +1,5 @@
 <% provide(:title, "3D Painter") %>
 <%= javascript_include_tag params[:controller] %>
-
 <div class="center jumbotron">
   <h1>3D Painter</h1>
   <br> <br>
@@ -8,11 +7,47 @@
   <p>Future plans are to have multiplayer features and be a 3D pictionary!</p>
 </div>
 
-<div class="row mx-0">
-  <div class="col center mb-2">
-    <canvas id="painter-canvas">
+
+<div id="canvas-container">
+  <canvas id="painter-canvas"></canvas>
+
+  <div id="control-icons" class="material-icons noselect">
+    <div class="flex-container-top">
+      <button class="decrease-brush-size-btn">remove_circle_outline</button>
+      <span class="brush-size-span">Size: </span>
+      <button class="increase-brush-size-btn">add_circle_outline</button>
+    </div>
+
+    <div class="flex-container-middle">
+      <div class="flex-col">
+        <button class="guide-grid-in-btn">remove_circle_outline</button>
+        <span>Grid</span>
+        <button class="guide-grid-out-btn">add_circle_outline</button>
+      </div>
+
+      <div class="flex-col">
+        <button class="zoom-in-btn">zoom_in</button>
+        <span>Zoom</span>
+        <button class="zoom-out-btn">zoom_out</button>
+      </div>
+    </div>
+
+
+    <div class="flex-container-bottom">
+      <div><button class="rotate-toggle-btn">3d_rotation</button></div>
+
+      <div>
+        <button class="undo-btn">undo</button>
+        <button class="clear-canvas-btn">add_photo_alternate</button>
+      </div>
+
+      <div><button class="fullscreen-btn">fullscreen</button></div>
+    </div>
+
   </div>
 </div>
+
+
 
 <div class="row my-5 mx-0 px-5">
   <div class="col-12 center mb-3">

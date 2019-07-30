@@ -1,3 +1,67 @@
-// Place all the styles related to the 3D Painter controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+#canvas-container {
+  display: inline-block;
+  position: relative;
+}
+
+#control-icons {
+  pointer-events: none;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  button {
+    pointer-events: auto;
+  }
+
+  span {
+    font-family: initial;
+    text-shadow: 1px 0px #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+    vertical-align: middle;
+  }
+}
+
+#painter-canvas {
+  display: block;
+}
+
+.flex-container-top {
+  height: 10%;
+  width: 100%;
+}
+
+.flex-container-middle {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  height: 80%;
+  width: 100%;
+}
+
+.flex-container-bottom {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  height: 10%;
+  width: 100%;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+
+  button {
+    margin: 5px 0;
+  }
+}
