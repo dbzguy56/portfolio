@@ -19,12 +19,13 @@ function typeWriter () {
 
 function openTab(e, tabName) {
   var i, tabcontent, tablinks;
-  tabcontent = e.path[2].getElementsByClassName("tabcontent");
+  var path = e.path || (e.composedPath && e.composedPath());
+  tabcontent = path[2].getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
   }
 
-  tablinks = e.path[2].getElementsByClassName("tablinks");
+  tablinks = path[2].getElementsByClassName("tablinks");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
