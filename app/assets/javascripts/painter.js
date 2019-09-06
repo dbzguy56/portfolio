@@ -187,6 +187,13 @@ function runPainter() { // Main game function
   var canvasContainer = document.getElementById("canvas-container");
   var gl = canvas.getContext("webgl2");
 
+  if (!gl) {
+    browserSupportMsg = document.querySelector(".browser-support-msg");
+    browserSupportMsg.style.display = "block";
+    document.querySelector("#control-icons").style.display = "none";
+  }
+
+
   /*
   const enterFullscreenImg = new Image(512, 512);
   enterFullscreenImg.src = '/assets/enterFullscreen.png';
