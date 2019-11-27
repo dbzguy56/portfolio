@@ -3,7 +3,12 @@ Rails.application.routes.draw do
   root 'static_pages#home'
 
   get '/mastermind', to: 'mastermind#new'
+
   get '/3d_painter', to: 'painter#new', as: 'painter'
+  post '/3d_painter/rooms', to: 'rooms#create'
+
+  post '/3d_painter/players', to: 'players#create'
+
   get '/signup', to: 'users#new'
   post '/signup', to: 'users#create'
 

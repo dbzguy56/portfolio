@@ -55,7 +55,45 @@
 
       <div><button class="fullscreen-btn">fullscreen</button></div>
     </div>
+  </div>
 
+  <div class="main-menu menu noselect">
+    <div class="main-menu-container">
+      <button class="free-draw-btn">Free Draw</button>
+      <form class="menu-form">
+        <span>Multiplayer:</span>
+        <input class="menu-input name-input" type="text" placeholder="Choose a name..." minlength="3" required>
+        <button class="create-room-menu-btn" type="submit">Create a room</button>
+        <button class="join-room-btn" type="submit">Join a room</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="create-room-menu menu noselect">
+    <form class="menu-form">
+      <input class="menu-input room-name-input" type="text" placeholder="Choose a room name..." minlength="3" required>
+      <input class="menu-input room-pass-input" type="password" placeholder="Choose a password..." minlength="3" required>
+      <button class="create-room-btn" type="submit">Create room</button>
+    </form>
+  </div>
+
+  <div class="join-room-menu menu noselect">
+    blah
+  </div>
+
+  <div class="room-menu menu noselect">
+    <div class="room-left">
+      <div class="room-name-div"></div>
+    </div>
+    <div class="chat">
+      <textarea readonly class="chat-messages"></textarea>
+      <div class="chat-input-container">
+        <div class="chat-input" copyable-text selectable-text contenteditable="true"></div>
+        <div class="chat-send-container">
+          <button class="chat-send-btn material-icons">send</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

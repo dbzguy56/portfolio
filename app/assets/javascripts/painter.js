@@ -203,6 +203,7 @@ function runPainter() { // Main game function
   const CAMERAZOOMMIN = 1;
   const CAMERAZOOMMAX = 50;
 
+  var menuOpen = true;
   var zoomingIn = false;
   var zoomingOut = false;
 
@@ -253,6 +254,8 @@ function runPainter() { // Main game function
   var iconSize, texPosX, texPosY;
 
   // --- UI BUTTON HANDLING ---
+
+    // ----- GAME CONTROLS -----
   var increaseBrushSizeButton = document.querySelectorAll(".increase-brush-size-btn");
   var decreaseBrushSizeButton = document.querySelectorAll(".decrease-brush-size-btn");
 
@@ -362,38 +365,118 @@ function runPainter() { // Main game function
     action => guideGridButton.addEventListener(action, () => inputs.keySDown = false)));
 
 
+
+    // ----- MENU CONTROLS -----
+  var menuControlIcons = document.querySelectorAll(".main-menu");
+  var gameControlIcons = document.querySelectorAll("#control-icons");
+  var createRoomIcons = document.querySelectorAll(".create-room-menu");
+  var joinRoomIcons = document.querySelectorAll(".join-room-menu");
+  var roomMenuIcons = document.querySelectorAll(".room-menu");
+
+  var freeDrawButton = document.querySelectorAll(".free-draw-btn");
+  var createRoomMenuButton = document.querySelectorAll(".create-room-menu-btn");
+  var joinRoomButton = document.querySelectorAll(".join-room-btn");
+
+  var createRoomButton = document.querySelectorAll(".create-room-btn");
+
+  var currentRoomNameDiv = document.querySelectorAll(".room-name-div");
+
+  freeDrawButton[0].addEventListener("click", (e) => {
+    menuControlIcons[0].style = "display: none";
+    gameControlIcons[0].style = "display: block";
+    menuOpen = false;
+  });
+
+  var users = {dpak: 1};
+
+  createRoomMenuButton[0].addEventListener("click", (e) => {
+    let currentName = document.querySelector(".name-input");
+
+    currentName.setCustomValidity("");
+    if (users[currentName.value] != undefined) {
+      currentName.setCustomValidity("This name has already been taken!");
+    }
+
+    if (currentName.checkValidity()) {
+      menuControlIcons[0].style = "display: none";
+      createRoomIcons[0].style = "display: flex";
+    }
+  });
+
+  /*
+  joinRoomButton[0].addEventListener("click", (e) => {
+    menuControlIcons[0].style = "display: none";
+    joinRoomIcons[0].style = "display: flex";
+  });
+  */
+
+  createRoomButton[0].addEventListener("click", (e) => {
+    let roomName = document.querySelector(".room-name-input");
+    let password = document.querySelector(".room-pass-input");
+
+    if (roomName.checkValidity() && password.checkValidity())
+    {
+      fetch('/3d_painter/rooms',
+        { method: 'POST',
+          headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            roomName: roomName.value,
+            password: password.value
+          }),
+          credentials: 'same-origin'
+        })
+      .then((response) => {
+        return response.json();
+      })
+      .then((myJson) => {
+        let returnedJson = JSON.stringify(myJson);
+        let currentRoomName = myJson.roomName;
+
+        createRoomIcons[0].style = "display: none";
+        roomMenuIcons[0].style = "display: flex";
+
+        currentRoomNameDiv[0].innerText = `${currentRoomName} - Game Room`;
+      });
+    }
+  });
+
   // --- MOUSE HANDLING ---
 
   var brushArrStartSize;
   canvas.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    if (inputs.mouseX == null || inputs.mouseY == null) {
-      canvasRect = document.getElementById("canvas-container").getBoundingClientRect();
-      inputs.mouseX = canvasRect.left + 0.5;
-      inputs.mouseY = canvasRect.top;
-      //inputs.mouseX = e.clientX - canvasRect.left + 0.5;
-      //inputs.mouseY = e.clientY - canvasRect.top;
-    }
-    if (e.which == 3 || (rotateToggle && e.which == 1)) {
-      inputs.rightMouseDown = true;
-      inputs.initMouseX = inputs.mouseX;
-      inputs.initMouseY = inputs.mouseY;
-    }
-    else if (e.which == 1) {
-      //targetPosX = inputs.mouseX;
-      //targetPosY = inputs.mouseY;
-      /* For texture fullscreen
-      if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
-        (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
-      {
-        fullscreen = toggleFullscreen(canvasContainer, fullscreen);
+    if (!menuOpen) {
+      e.preventDefault();
+      if (inputs.mouseX == null || inputs.mouseY == null) {
+        canvasRect = document.getElementById("canvas-container").getBoundingClientRect();
+        inputs.mouseX = canvasRect.left + 0.5;
+        inputs.mouseY = canvasRect.top;
+        //inputs.mouseX = e.clientX - canvasRect.left + 0.5;
+        //inputs.mouseY = e.clientY - canvasRect.top;
       }
-      else {
+      if (e.which == 3 || (rotateToggle && e.which == 1)) {
+        inputs.rightMouseDown = true;
+        inputs.initMouseX = inputs.mouseX;
+        inputs.initMouseY = inputs.mouseY;
+      }
+      else if (e.which == 1) {
+        //targetPosX = inputs.mouseX;
+        //targetPosY = inputs.mouseY;
+        /* For texture fullscreen
+        if ((inputs.mouseX >= texPosX && inputs.mouseX <= (texPosX + iconSize)) &&
+          (inputs.mouseY >= texPosY && inputs.mouseY <= (texPosY + iconSize)))
+        {
+          fullscreen = toggleFullscreen(canvasContainer, fullscreen);
+        }
+        else {
+          inputs.mouseClick = true;
+        }
+        */
         inputs.mouseClick = true;
+        brushArrStartSize = paintBrush.length;
       }
-      */
-      inputs.mouseClick = true;
-      brushArrStartSize = paintBrush.length;
     }
   });
 
@@ -442,18 +525,20 @@ function runPainter() { // Main game function
 
   // --- KEYBOARD HANDLING ---
   window.addEventListener("keydown", (e) => {
-    if (e.code == "KeyW") {
-      inputs.keyWDown = true;
-    }
-    if (e.code == "KeyS") {
-      inputs.keySDown = true;
-    }
-    if ((e.code == "Enter") && (e.altKey)) {
-      fullscreen = toggleFullscreen(canvasContainer, fullscreen);
-    }
-    if (e.code == "Space") {
-      e.preventDefault();
-      paintBrush = [];
+    if (!menuOpen) {
+      if (e.code == "KeyW") {
+        inputs.keyWDown = true;
+      }
+      if (e.code == "KeyS") {
+        inputs.keySDown = true;
+      }
+      if ((e.code == "Enter") && (e.altKey)) {
+        fullscreen = toggleFullscreen(canvasContainer, fullscreen);
+      }
+      if (e.code == "Space") {
+        e.preventDefault();
+        paintBrush = [];
+      }
     }
   });
   /*
@@ -635,6 +720,14 @@ function runPainter() { // Main game function
     initPitchAngle = pitchAngle;
   });
 
+
+  // --- FORM HANDLING ---
+  var menuForm = document.querySelector(".menu-form");
+  var nameInput = document.querySelectorAll(".name-input")[0];
+
+  $(".menu-form").submit((e) => {
+    e.preventDefault();
+  });
 
   // --- IMAGE LOADING ---
   /*
